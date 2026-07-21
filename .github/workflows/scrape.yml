@@ -1,0 +1,41 @@
+name: Refrescar dataset
+
+on:
+  schedule:
+    # 06:15 UTC de lunes a viernes.
+    - cron: '15 6 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # idealista bloquea con frecuencia las IPs de datacenter (DataDome).
+      # Si este paso empieza a fallar de forma sistemática, ejecuta el scraper
+      # en local (`npm run scrape`) y commitea el resultado a mano.
+      - name: Scrape
+        run: npm run scrape
+
+      - name: Commit si hay cambios
+        run: |
+          if git diff --quiet -- public/data/pisos.json; then
+            echo "Sin cambios en el dataset."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/pisos.json
+          git commit -m "chore(data): refresco automático del dataset"
+          git push

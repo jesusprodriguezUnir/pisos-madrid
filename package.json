@@ -1,0 +1,50 @@
+{
+  "name": "pisos-madrid",
+  "version": "1.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "build:pages": "ng build --base-href /pisos-madrid/",
+    "watch": "ng build --watch --configuration development",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "scrape": "tsx scripts/scrape/index.ts"
+  },
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "dependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.0.7",
+    "@angular/cli": "^22.0.7",
+    "@angular/compiler-cli": "^22.0.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.1.1",
+    "angular-eslint": "^22.1.0",
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
+    "node-html-parser": "^9.0.0",
+    "prettier": "^3.8.1",
+    "tsx": "^4.23.1",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^4.0.8"
+  },
+  "description": "Buscador de vivienda en Madrid sobre datos agregados de idealista",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

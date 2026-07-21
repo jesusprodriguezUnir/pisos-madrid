@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/node",
+    "types": ["node"],
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": ["scripts/**/*.ts", "src/**/*.spec.ts", "vitest.config.ts", "eslint.config.js"]
+}

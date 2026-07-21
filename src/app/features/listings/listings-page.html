@@ -1,0 +1,209 @@
+<header class="page-header">
+  <h1>Búsqueda de piso · Madrid</h1>
+  <p class="sub">
+    {{ totalCount() }} inmuebles · ≥2 hab · ≥60 m² · venta ≤550.000 € / alquiler ≤1.800 €/mes
+    @if (scrapedAt()) {
+      · datos de idealista, {{ scrapedAt() | date: 'dd/MM/yyyy HH:mm' }}
+    }
+  </p>
+</header>
+
+@if (error(); as message) {
+  <p class="alert" role="alert">No se pudo cargar el dataset: {{ message }}</p>
+} @else if (isLoading()) {
+  <p class="alert">Cargando inmuebles…</p>
+} @else {
+  <section class="filters" aria-label="Filtros">
+    <div class="field">
+      <span class="label">Operación</span>
+      <div class="chips" role="group">
+        @for (op of operations; track op) {
+          <button
+            type="button"
+            class="chip"
+            [class.on]="filters().operation === op"
+            [attr.aria-pressed]="filters().operation === op"
+            (click)="setOperation(op)"
+          >
+            {{ op === 'venta' ? 'Venta' : 'Alquiler' }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="label">Zona</span>
+      <div class="chips" role="group">
+        @for (zone of zones(); track zone) {
+          <button
+            type="button"
+            class="chip"
+            [class.on]="filters().zones.includes(zone)"
+            [attr.aria-pressed]="filters().zones.includes(zone)"
+            (click)="toggleZone(zone)"
+          >
+            {{ zone }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="rooms">Habitaciones mín.</label>
+      <select id="rooms" [ngModel]="filters().minRooms" (ngModelChange)="patch('minRooms', $event)">
+        <option [ngValue]="2">2+</option>
+        <option [ngValue]="3">3+</option>
+        <option [ngValue]="4">4+</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label class="label" for="area">m² mín. · {{ filters().minArea }}</label>
+      <input
+        id="area"
+        type="range"
+        min="60"
+        max="150"
+        step="5"
+        [ngModel]="filters().minArea"
+        (ngModelChange)="patch('minArea', asNumber($event))"
+      />
+    </div>
+
+    <div class="field">
+      <label class="label" for="price">
+        Precio máx. · {{ filters().maxPrice | number: '1.0-0' }} {{ priceUnit() }}
+      </label>
+      <input
+        id="price"
+        type="range"
+        min="0"
+        [max]="priceCeiling()"
+        [step]="priceStep()"
+        [ngModel]="filters().maxPrice"
+        (ngModelChange)="patch('maxPrice', asNumber($event))"
+      />
+    </div>
+
+    <div class="field">
+      <label class="label" for="query">Buscar calle o barrio</label>
+      <input
+        id="query"
+        type="text"
+        placeholder="p. ej. Mendizábal"
+        [ngModel]="filters().query"
+        (ngModelChange)="patch('query', $event)"
+      />
+    </div>
+
+    <div class="field">
+      <span class="label">Extras</span>
+      <div class="chips" role="group">
+        <button
+          type="button"
+          class="chip"
+          [class.on]="filters().requireLift"
+          [attr.aria-pressed]="filters().requireLift"
+          (click)="toggleFlag('requireLift')"
+        >
+          Ascensor
+        </button>
+        <button
+          type="button"
+          class="chip"
+          [class.on]="filters().requireExterior"
+          [attr.aria-pressed]="filters().requireExterior"
+          (click)="toggleFlag('requireExterior')"
+        >
+          Exterior
+        </button>
+        <button
+          type="button"
+          class="chip"
+          [class.on]="filters().onlyBelowMedian"
+          [attr.aria-pressed]="filters().onlyBelowMedian"
+          (click)="toggleFlag('onlyBelowMedian')"
+        >
+          Bajo mediana
+        </button>
+      </div>
+    </div>
+
+    <button type="button" class="reset" (click)="reset()">Limpiar</button>
+  </section>
+
+  <section class="stats" aria-label="Resumen">
+    <div class="stat">
+      <span class="value">{{ summary().count }}</span>
+      <span class="key">Resultados</span>
+    </div>
+    <div class="stat">
+      <span class="value">{{ summary().medianPrice | number: '1.0-0' }} {{ priceUnit() }}</span>
+      <span class="key">Precio mediano</span>
+    </div>
+    <div class="stat">
+      <span class="value">{{ summary().minPrice | number: '1.0-0' }} {{ priceUnit() }}</span>
+      <span class="key">Más barato</span>
+    </div>
+    <div class="stat">
+      <span class="value">{{ summary().medianPricePerM2 | number: '1.0-0' }} €/m²</span>
+      <span class="key">€/m² mediano</span>
+    </div>
+    <div class="stat">
+      <span class="value">{{ summary().bargains }}</span>
+      <span class="key">&gt;10 % bajo mediana</span>
+    </div>
+  </section>
+
+  <table>
+    <thead>
+      <tr>
+        <th scope="col"><button type="button" (click)="sortBy('address')">Inmueble</button></th>
+        <th scope="col" class="hide-sm">
+          <button type="button" (click)="sortBy('zone')">Zona</button>
+        </th>
+        <th scope="col" class="num">
+          <button type="button" (click)="sortBy('rooms')">Hab</button>
+        </th>
+        <th scope="col" class="num"><button type="button" (click)="sortBy('area')">m²</button></th>
+        <th scope="col" class="num">
+          <button type="button" (click)="sortBy('price')">Precio</button>
+        </th>
+        <th scope="col" class="num">
+          <button type="button" (click)="sortBy('pricePerM2')">€/m²</button>
+        </th>
+        <th scope="col" class="num">
+          <button type="button" (click)="sortBy('deltaVsZone')">vs. zona</button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of rows(); track row.id) {
+        <tr>
+          <td>
+            <a [href]="row.url" target="_blank" rel="noopener noreferrer">
+              {{ row.type }} · {{ row.address }}
+            </a>
+            <span class="meta">{{ row.floor || '—' }}</span>
+          </td>
+          <td class="hide-sm">
+            <span class="tag">{{ row.zone }}</span>
+          </td>
+          <td class="num">{{ row.rooms }}</td>
+          <td class="num">{{ row.area }}</td>
+          <td class="num">
+            <b>{{ row.price | number: '1.0-0' }}</b> {{ priceUnit() }}
+          </td>
+          <td class="num">{{ row.pricePerM2 | number: '1.0-0' }}</td>
+          <td class="num" [class]="deltaClass(row.deltaVsZone)">
+            {{ row.deltaVsZone > 0 ? '+' : '' }}{{ row.deltaVsZone | number: '1.0-0' }} %
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" class="empty">Sin resultados con estos filtros.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
