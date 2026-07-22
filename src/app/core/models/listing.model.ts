@@ -52,16 +52,23 @@ export interface ListingsDataset {
   readonly listings: readonly Listing[];
 }
 
+export type ViewMode = 'table' | 'cards';
+
 export interface ListingFilters {
   readonly operation: Operation;
   readonly zones: readonly string[];
   readonly minRooms: number;
   readonly minArea: number;
+  readonly minPrice: number;
   readonly maxPrice: number;
   readonly query: string;
+  readonly sources: readonly Source[];
+  readonly types: readonly string[];
   readonly requireLift: boolean;
   readonly requireExterior: boolean;
   readonly onlyBelowMedian: boolean;
+  readonly onlyFavorites: boolean;
+  readonly hideDismissed: boolean;
 }
 
 export type SortKey =

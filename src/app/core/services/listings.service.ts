@@ -61,4 +61,8 @@ export class ListingsService {
   readonly zones = computed(() =>
     [...new Set(this.listings().map((l) => l.zone))].sort((a, b) => a.localeCompare(b, 'es')),
   );
+
+  readonly propertyTypes = computed(() =>
+    [...new Set(this.listings().map((l) => l.type).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es')),
+  );
 }

@@ -54,6 +54,14 @@ export const ZONES: readonly ZoneConfig[] = [
     fotocasa: 'vallehermoso',
   },
   { name: 'Ríos Rosas', slug: 'rios-rosas', idealista: 'madrid/chamberi/rios-rosas', fotocasa: 'rios-rosas' },
+  { name: 'Arganzuela', slug: 'arganzuela', idealista: 'madrid/arganzuela', fotocasa: 'arganzuela' },
+  { name: 'Palacio', slug: 'palacio', idealista: 'madrid/centro/palacio', fotocasa: 'palacio' },
+  {
+    name: 'Malasaña',
+    slug: 'malasana',
+    idealista: 'madrid/centro/universidad',
+    fotocasa: 'universidad-malasana',
+  },
 ];
 
 export interface OperationConfig {

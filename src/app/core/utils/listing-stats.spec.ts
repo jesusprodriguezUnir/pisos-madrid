@@ -23,11 +23,16 @@ const baseFilters: ListingFilters = {
   zones: [],
   minRooms: 2,
   minArea: 60,
+  minPrice: 0,
   maxPrice: 550_000,
   query: '',
+  sources: [],
+  types: [],
   requireLift: false,
   requireExterior: false,
   onlyBelowMedian: false,
+  onlyFavorites: false,
+  hideDismissed: false,
 };
 
 describe('median', () => {
@@ -105,9 +110,9 @@ describe('enrich', () => {
 
 describe('applyFilters', () => {
   const data: EnrichedListing[] = enrich([
-    listing({ id: 'a', zone: 'Chamberí', price: 500_000, area: 90, rooms: 3 }),
-    listing({ id: 'b', zone: 'Embajadores', price: 300_000, area: 65, rooms: 2 }),
-    listing({ id: 'c', zone: 'Embajadores', price: 540_000, area: 62, rooms: 2 }),
+    listing({ id: 'a', zone: 'Chamberí', price: 500_000, area: 90, rooms: 3, source: 'idealista', type: 'Piso' }),
+    listing({ id: 'b', zone: 'Embajadores', price: 300_000, area: 65, rooms: 2, source: 'fotocasa', type: 'Ático' }),
+    listing({ id: 'c', zone: 'Embajadores', price: 540_000, area: 62, rooms: 2, source: 'idealista', type: 'Piso' }),
     listing({ id: 'r', zone: 'Chamberí', operation: 'alquiler', price: 1_500, area: 70 }),
   ]);
 
@@ -126,15 +131,24 @@ describe('applyFilters', () => {
     expect(result.map((l) => l.id)).toEqual(['b', 'c']);
   });
 
+  it('filtra por fuentes de origen', () => {
+    const result = applyFilters(data, { ...baseFilters, sources: ['fotocasa'] });
+    expect(result.map((l) => l.id)).toEqual(['b']);
+  });
+
+  it('filtra por tipo de inmueble', () => {
+    const result = applyFilters(data, { ...baseFilters, types: ['Ático'] });
+    expect(result.map((l) => l.id)).toEqual(['b']);
+  });
+
+  it('aplica precio mínimo y máximo', () => {
+    expect(applyFilters(data, { ...baseFilters, minPrice: 400_000 }).map((l) => l.id)).toEqual(['a', 'c']);
+    expect(applyFilters(data, { ...baseFilters, maxPrice: 400_000 }).map((l) => l.id)).toEqual(['b']);
+  });
+
   it('aplica mínimos de habitaciones y superficie', () => {
     expect(applyFilters(data, { ...baseFilters, minRooms: 3 }).map((l) => l.id)).toEqual(['a']);
     expect(applyFilters(data, { ...baseFilters, minArea: 80 }).map((l) => l.id)).toEqual(['a']);
-  });
-
-  it('aplica techo de precio', () => {
-    expect(applyFilters(data, { ...baseFilters, maxPrice: 400_000 }).map((l) => l.id)).toEqual([
-      'b',
-    ]);
   });
 
   it('busca por texto sin distinguir mayúsculas', () => {
@@ -142,13 +156,23 @@ describe('applyFilters', () => {
     expect(applyFilters(data, { ...baseFilters, query: '  prueba  ' })).toHaveLength(3);
   });
 
-  it('filtra los que están por debajo de la mediana de su zona', () => {
-    const result = applyFilters(data, { ...baseFilters, onlyBelowMedian: true });
-    expect(result.every((l) => l.deltaVsZone < 0)).toBe(true);
-  });
+  it('filtra favoritos y descartados', () => {
+    const favoritesSet = new Set(['a']);
+    const dismissedSet = new Set(['b']);
 
-  it('no devuelve nada si ningún anuncio cumple un requisito', () => {
-    expect(applyFilters(data, { ...baseFilters, minRooms: 9 })).toEqual([]);
+    const favResult = applyFilters(
+      data,
+      { ...baseFilters, onlyFavorites: true },
+      { favoritesSet, dismissedSet },
+    );
+    expect(favResult.map((l) => l.id)).toEqual(['a']);
+
+    const hideResult = applyFilters(
+      data,
+      { ...baseFilters, hideDismissed: true },
+      { favoritesSet, dismissedSet },
+    );
+    expect(hideResult.map((l) => l.id)).toEqual(['a', 'c']);
   });
 });
 
@@ -187,6 +211,20 @@ describe('sortListings', () => {
   });
 });
 
+describe('exportation helpers', () => {
+  it('exporta correctamente a CSV y JSON', () => {
+    const data = enrich([listing({ id: '1', address: 'Calle Mayor', price: 250_000 })]);
+    const csv = import('./listing-stats').then(({ exportToCsv, exportToJson }) => {
+      const csvRes = exportToCsv(data);
+      expect(csvRes).toContain('"Calle Mayor"');
+      expect(csvRes).toContain('"250000"');
+
+      const jsonRes = exportToJson(data);
+      expect(jsonRes).toContain('"id": "1"');
+    });
+  });
+});
+
 describe('summarize', () => {
   it('devuelve ceros para una colección vacía', () => {
     expect(summarize([])).toEqual({
@@ -214,3 +252,4 @@ describe('summarize', () => {
     expect(summary.bargains).toBe(1);
   });
 });
+

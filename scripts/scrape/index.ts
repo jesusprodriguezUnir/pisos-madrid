@@ -1,8 +1,18 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import type { Listing, ListingsDataset, Operation } from '../../src/app/core/models/listing.model';
 import { CRITERIA, OPERATIONS, OUTPUT_DIR, OUTPUT_INDEX_PATH, ZONES, buildIdealistaUrl } from './config';
 import { parseListingsPage } from './parser';
 import { scrapeFotocasaZone, withFotocasaBrowser } from './fotocasa';
+import { computeListingDiff, formatDiffReport, type ListingDiff } from './listing-diff';
+
+async function readPreviousListings(slug: string): Promise<Listing[]> {
+  try {
+    const raw = await readFile(`${OUTPUT_DIR}/${slug}.json`, 'utf-8');
+    return (JSON.parse(raw) as ListingsDataset).listings as Listing[];
+  } catch {
+    return [];
+  }
+}
 
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
@@ -69,6 +79,7 @@ async function main(): Promise<void> {
   await mkdir(OUTPUT_DIR, { recursive: true });
 
   let zonesWritten = 0;
+  const diffsByZone = new Map<string, ListingDiff>();
 
   await withFotocasaBrowser(async (browser) => {
     for (const zone of ZONES) {
@@ -97,6 +108,9 @@ async function main(): Promise<void> {
         continue;
       }
 
+      const previousListings = await readPreviousListings(zone.slug);
+      diffsByZone.set(zone.name, computeListingDiff(previousListings, listings));
+
       const dataset: ListingsDataset = {
         source: 'idealista.com + fotocasa.es',
         scrapedAt: new Date().toISOString(),
@@ -123,6 +137,13 @@ async function main(): Promise<void> {
   await writeFile(OUTPUT_INDEX_PATH, `${JSON.stringify(index, null, 1)}\n`, 'utf-8');
 
   console.log(`\n${zonesWritten}/${ZONES.length} distritos actualizados.`);
+
+  const report = formatDiffReport(diffsByZone);
+  console.log(`\n${report}`);
+
+  if (process.env['GITHUB_STEP_SUMMARY']) {
+    await writeFile(process.env['GITHUB_STEP_SUMMARY'], `\n${report}\n`, { flag: 'a' });
+  }
 }
 
 main().catch((error: unknown) => {

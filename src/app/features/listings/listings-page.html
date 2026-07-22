@@ -1,11 +1,47 @@
 <header class="page-header">
-  <h1>Búsqueda de piso · Madrid</h1>
-  <p class="sub">
-    {{ totalCount() }} inmuebles · ≥2 hab · ≥60 m² · venta ≤550.000 € / alquiler ≤1.800 €/mes
-    @if (scrapedAt()) {
-      · datos de idealista y fotocasa, {{ scrapedAt() | date: 'dd/MM/yyyy HH:mm' }}
-    }
-  </p>
+  <div class="header-main">
+    <h1>Búsqueda de piso · Madrid</h1>
+    <p class="sub">
+      {{ totalCount() }} inmuebles · ≥2 hab · ≥60 m² · venta ≤550.000 € / alquiler ≤1.800 €/mes
+      @if (scrapedAt()) {
+        · datos de idealista y fotocasa, {{ scrapedAt() | date: 'dd/MM/yyyy HH:mm' }}
+      }
+    </p>
+  </div>
+
+  <div class="header-actions">
+    <!-- Selector de vista -->
+    <div class="view-mode-toggle" role="group" aria-label="Modo de visualización">
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active]="viewMode() === 'cards'"
+        (click)="setViewMode('cards')"
+        title="Vista en Tarjetas"
+      >
+        <span>🎴 Tarjetas</span>
+      </button>
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.active]="viewMode() === 'table'"
+        (click)="setViewMode('table')"
+        title="Vista en Tabla"
+      >
+        <span>📋 Tabla</span>
+      </button>
+    </div>
+
+    <!-- Exportar -->
+    <div class="export-dropdown">
+      <button type="button" class="btn-export" (click)="exportData('csv')" title="Exportar resultados a CSV">
+        📥 CSV
+      </button>
+      <button type="button" class="btn-export" (click)="exportData('json')" title="Exportar resultados a JSON">
+        📥 JSON
+      </button>
+    </div>
+  </div>
 </header>
 
 @if (error(); as message) {
@@ -14,6 +50,15 @@
   <p class="alert">Cargando inmuebles…</p>
 } @else {
   <section class="filters" aria-label="Filtros">
+    <div class="filters-header">
+      <span class="filters-title">Filtros de búsqueda</span>
+      @if (activeFiltersCount() > 0) {
+        <span class="active-badge">{{ activeFiltersCount() }} activo{{ activeFiltersCount() > 1 ? 's' : '' }}</span>
+      }
+      <button type="button" class="reset" (click)="reset()">Restablecer todo</button>
+    </div>
+
+    <!-- Operación -->
     <div class="field">
       <span class="label">Operación</span>
       <div class="chips" role="group">
@@ -31,6 +76,25 @@
       </div>
     </div>
 
+    <!-- Origen -->
+    <div class="field">
+      <span class="label">Fuente</span>
+      <div class="chips" role="group">
+        @for (src of availableSources; track src) {
+          <button
+            type="button"
+            class="chip"
+            [class.on]="filters().sources.includes(src)"
+            [attr.aria-pressed]="filters().sources.includes(src)"
+            (click)="toggleSource(src)"
+          >
+            {{ src === 'idealista' ? 'Idealista' : 'Fotocasa' }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Zona -->
     <div class="field">
       <span class="label">Zona</span>
       <div class="chips" role="group">
@@ -48,56 +112,99 @@
       </div>
     </div>
 
-    <div class="field">
-      <label class="label" for="rooms">Habitaciones mín.</label>
-      <select id="rooms" [ngModel]="filters().minRooms" (ngModelChange)="patch('minRooms', $event)">
-        <option [ngValue]="2">2+</option>
-        <option [ngValue]="3">3+</option>
-        <option [ngValue]="4">4+</option>
-      </select>
+    <!-- Tipo de Inmueble -->
+    @if (propertyTypes().length > 0) {
+      <div class="field">
+        <span class="label">Tipo</span>
+        <div class="chips" role="group">
+          @for (t of propertyTypes(); track t) {
+            <button
+              type="button"
+              class="chip"
+              [class.on]="filters().types.includes(t)"
+              [attr.aria-pressed]="filters().types.includes(t)"
+              (click)="toggleType(t)"
+            >
+              {{ t }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="filter-row">
+      <!-- Habitaciones mín -->
+      <div class="field field-compact">
+        <label class="label" for="rooms">Habitaciones mín.</label>
+        <select id="rooms" [ngModel]="filters().minRooms" (ngModelChange)="patch('minRooms', $event)">
+          <option [ngValue]="2">2+</option>
+          <option [ngValue]="3">3+</option>
+          <option [ngValue]="4">4+</option>
+        </select>
+      </div>
+
+      <!-- Superficie mín -->
+      <div class="field field-compact">
+        <label class="label" for="area">m² mín. · {{ filters().minArea }} m²</label>
+        <input
+          id="area"
+          type="range"
+          min="60"
+          max="150"
+          step="5"
+          [ngModel]="filters().minArea"
+          (ngModelChange)="patch('minArea', asNumber($event))"
+        />
+      </div>
+
+      <!-- Precio mín -->
+      <div class="field field-compact">
+        <label class="label" for="minPrice">
+          Precio mín. · {{ filters().minPrice | number: '1.0-0' }} {{ priceUnit() }}
+        </label>
+        <input
+          id="minPrice"
+          type="range"
+          min="0"
+          [max]="priceCeiling()"
+          [step]="priceStep()"
+          [ngModel]="filters().minPrice"
+          (ngModelChange)="patch('minPrice', asNumber($event))"
+        />
+      </div>
+
+      <!-- Precio máx -->
+      <div class="field field-compact">
+        <label class="label" for="price">
+          Precio máx. · {{ filters().maxPrice | number: '1.0-0' }} {{ priceUnit() }}
+        </label>
+        <input
+          id="price"
+          type="range"
+          min="0"
+          [max]="priceCeiling()"
+          [step]="priceStep()"
+          [ngModel]="filters().maxPrice"
+          (ngModelChange)="patch('maxPrice', asNumber($event))"
+        />
+      </div>
     </div>
 
+    <!-- Búsqueda textual -->
     <div class="field">
-      <label class="label" for="area">m² mín. · {{ filters().minArea }}</label>
-      <input
-        id="area"
-        type="range"
-        min="60"
-        max="150"
-        step="5"
-        [ngModel]="filters().minArea"
-        (ngModelChange)="patch('minArea', asNumber($event))"
-      />
-    </div>
-
-    <div class="field">
-      <label class="label" for="price">
-        Precio máx. · {{ filters().maxPrice | number: '1.0-0' }} {{ priceUnit() }}
-      </label>
-      <input
-        id="price"
-        type="range"
-        min="0"
-        [max]="priceCeiling()"
-        [step]="priceStep()"
-        [ngModel]="filters().maxPrice"
-        (ngModelChange)="patch('maxPrice', asNumber($event))"
-      />
-    </div>
-
-    <div class="field">
-      <label class="label" for="query">Buscar calle o barrio</label>
+      <label class="label" for="query">Buscar calle, barrio o tipo</label>
       <input
         id="query"
         type="text"
-        placeholder="p. ej. Mendizábal"
+        placeholder="p. ej. Mendizábal, Argüelles, Ático..."
         [ngModel]="filters().query"
         (ngModelChange)="patch('query', $event)"
       />
     </div>
 
+    <!-- Extras y Favoritos -->
     <div class="field">
-      <span class="label">Extras</span>
+      <span class="label">Extras & Estado</span>
       <div class="chips" role="group">
         <button
           type="button"
@@ -106,7 +213,7 @@
           [attr.aria-pressed]="filters().requireLift"
           (click)="toggleFlag('requireLift')"
         >
-          Ascensor
+          🛗 Ascensor
         </button>
         <button
           type="button"
@@ -115,7 +222,7 @@
           [attr.aria-pressed]="filters().requireExterior"
           (click)="toggleFlag('requireExterior')"
         >
-          Exterior
+          ☀️ Exterior
         </button>
         <button
           type="button"
@@ -124,15 +231,34 @@
           [attr.aria-pressed]="filters().onlyBelowMedian"
           (click)="toggleFlag('onlyBelowMedian')"
         >
-          Bajo mediana
+          🏷️ Bajo mediana
+        </button>
+
+        <button
+          type="button"
+          class="chip chip-star"
+          [class.on]="filters().onlyFavorites"
+          [attr.aria-pressed]="filters().onlyFavorites"
+          (click)="toggleFlag('onlyFavorites')"
+        >
+          ⭐ Solo Favoritos @if (favoritesCount() > 0) { ({{ favoritesCount() }}) }
+        </button>
+
+        <button
+          type="button"
+          class="chip chip-dismiss"
+          [class.on]="filters().hideDismissed"
+          [attr.aria-pressed]="filters().hideDismissed"
+          (click)="toggleFlag('hideDismissed')"
+        >
+          🙈 Ocultar Descartados @if (dismissedCount() > 0) { ({{ dismissedCount() }}) }
         </button>
       </div>
     </div>
-
-    <button type="button" class="reset" (click)="reset()">Limpiar</button>
   </section>
 
-  <section class="stats" aria-label="Resumen">
+  <!-- Resumen estadístico KPI -->
+  <section class="stats" aria-label="Resumen de estadísticas">
     <div class="stat">
       <span class="value">{{ summary().count }}</span>
       <span class="key">Resultados</span>
@@ -149,61 +275,206 @@
       <span class="value">{{ summary().medianPricePerM2 | number: '1.0-0' }} €/m²</span>
       <span class="key">€/m² mediano</span>
     </div>
-    <div class="stat">
+    <div class="stat highlight-stat">
       <span class="value">{{ summary().bargains }}</span>
       <span class="key">&gt;10 % bajo mediana</span>
     </div>
   </section>
 
-  <table>
-    <thead>
-      <tr>
-        <th scope="col"><button type="button" (click)="sortBy('address')">Inmueble</button></th>
-        <th scope="col" class="hide-sm">
-          <button type="button" (click)="sortBy('zone')">Zona</button>
-        </th>
-        <th scope="col" class="num">
-          <button type="button" (click)="sortBy('rooms')">Hab</button>
-        </th>
-        <th scope="col" class="num"><button type="button" (click)="sortBy('area')">m²</button></th>
-        <th scope="col" class="num">
-          <button type="button" (click)="sortBy('price')">Precio</button>
-        </th>
-        <th scope="col" class="num">
-          <button type="button" (click)="sortBy('pricePerM2')">€/m²</button>
-        </th>
-        <th scope="col" class="num">
-          <button type="button" (click)="sortBy('deltaVsZone')">vs. zona</button>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (row of rows(); track row.id) {
-        <tr>
-          <td>
-            <a [href]="row.url" target="_blank" rel="noopener noreferrer">
-              {{ row.type }} · {{ row.address }}
-            </a>
-            <span class="meta">{{ row.floor || '—' }}</span>
-          </td>
-          <td class="hide-sm">
-            <span class="tag">{{ row.zone }}</span>
-          </td>
-          <td class="num">{{ row.rooms }}</td>
-          <td class="num">{{ row.area }}</td>
-          <td class="num">
-            <b>{{ row.price | number: '1.0-0' }}</b> {{ priceUnit() }}
-          </td>
-          <td class="num">{{ row.pricePerM2 | number: '1.0-0' }}</td>
-          <td class="num" [class]="deltaClass(row.deltaVsZone)">
-            {{ row.deltaVsZone > 0 ? '+' : '' }}{{ row.deltaVsZone | number: '1.0-0' }} %
-          </td>
-        </tr>
-      } @empty {
-        <tr>
-          <td colspan="7" class="empty">Sin resultados con estos filtros.</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+  <!-- LISTADO PRINCIPAL -->
+  @if (rows().length === 0) {
+    <div class="empty-state">
+      <p class="empty-text">No se encontraron inmuebles con los filtros seleccionados.</p>
+      <button type="button" class="btn-reset-inline" (click)="reset()">Restablecer Filtros</button>
+    </div>
+  } @else {
+    <!-- VISTA TARJETAS -->
+    @if (viewMode() === 'cards') {
+      <div class="cards-grid">
+        @for (row of paginatedRows(); track row.id) {
+          <article
+            class="listing-card"
+            [class.is-favorite]="favoritesService.isFavorite(row.id)"
+            [class.is-dismissed]="favoritesService.isDismissed(row.id)"
+          >
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-zone">{{ row.zone }}</span>
+                <span class="card-source" [class.idealista]="row.source === 'idealista'" [class.fotocasa]="row.source === 'fotocasa'">
+                  {{ row.source ?? 'idealista' }}
+                </span>
+              </div>
+              <div class="card-actions">
+                <button
+                  type="button"
+                  class="action-star"
+                  [class.active]="favoritesService.isFavorite(row.id)"
+                  (click)="favoritesService.toggleFavorite(row.id)"
+                  [title]="favoritesService.isFavorite(row.id) ? 'Quitar de favoritos' : 'Guardar como favorito'"
+                >
+                  ★
+                </button>
+                <button
+                  type="button"
+                  class="action-dismiss"
+                  [class.active]="favoritesService.isDismissed(row.id)"
+                  (click)="favoritesService.toggleDismissed(row.id)"
+                  [title]="favoritesService.isDismissed(row.id) ? 'Restaurar inmueble' : 'Descartar inmueble'"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <h2 class="card-title">
+              <a [href]="row.url" target="_blank" rel="noopener noreferrer">
+                {{ row.type }} · {{ row.address }}
+              </a>
+            </h2>
+
+            <div class="card-price-row">
+              <div class="card-price">
+                <span class="price-val">{{ row.price | number: '1.0-0' }}</span>
+                <span class="price-unit">{{ priceUnit() }}</span>
+              </div>
+              <div class="card-sqm">
+                {{ row.pricePerM2 | number: '1.0-0' }} €/m²
+              </div>
+            </div>
+
+            <div class="card-badges">
+              <span class="badge badge-delta" [class]="deltaClass(row.deltaVsZone)">
+                {{ row.deltaVsZone > 0 ? '+' : '' }}{{ row.deltaVsZone | number: '1.0-0' }} % vs zona
+              </span>
+              <span class="badge">🛏️ {{ row.rooms }} hab</span>
+              <span class="badge">📐 {{ row.area }} m²</span>
+              @if (row.hasLift) {
+                <span class="badge">🛗 Ascensor</span>
+              }
+              @if (row.isExterior) {
+                <span class="badge">☀️ Exterior</span>
+              }
+            </div>
+
+            @if (row.floor) {
+              <div class="card-floor-text">
+                {{ row.floor }}
+              </div>
+            }
+          </article>
+        }
+      </div>
+    } @else {
+      <!-- VISTA TABLA -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" class="col-action">Fav</th>
+              <th scope="col"><button type="button" (click)="sortBy('address')">Inmueble</button></th>
+              <th scope="col" class="hide-sm">
+                <button type="button" (click)="sortBy('zone')">Zona</button>
+              </th>
+              <th scope="col" class="num">
+                <button type="button" (click)="sortBy('rooms')">Hab</button>
+              </th>
+              <th scope="col" class="num"><button type="button" (click)="sortBy('area')">m²</button></th>
+              <th scope="col" class="num">
+                <button type="button" (click)="sortBy('price')">Precio</button>
+              </th>
+              <th scope="col" class="num">
+                <button type="button" (click)="sortBy('pricePerM2')">€/m²</button>
+              </th>
+              <th scope="col" class="num">
+                <button type="button" (click)="sortBy('deltaVsZone')">vs. zona</button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of paginatedRows(); track row.id) {
+              <tr [class.is-favorite]="favoritesService.isFavorite(row.id)" [class.is-dismissed]="favoritesService.isDismissed(row.id)">
+                <td class="col-action">
+                  <button
+                    type="button"
+                    class="action-star-inline"
+                    [class.active]="favoritesService.isFavorite(row.id)"
+                    (click)="favoritesService.toggleFavorite(row.id)"
+                  >
+                    ★
+                  </button>
+                </td>
+                <td>
+                  <a [href]="row.url" target="_blank" rel="noopener noreferrer">
+                    {{ row.type }} · {{ row.address }}
+                  </a>
+                  <span class="meta">
+                    {{ row.floor || '—' }}
+                    @if (row.source) {
+                      · <span class="tag-source">{{ row.source }}</span>
+                    }
+                  </span>
+                </td>
+                <td class="hide-sm">
+                  <span class="tag">{{ row.zone }}</span>
+                </td>
+                <td class="num">{{ row.rooms }}</td>
+                <td class="num">{{ row.area }}</td>
+                <td class="num">
+                  <b>{{ row.price | number: '1.0-0' }}</b> {{ priceUnit() }}
+                </td>
+                <td class="num">{{ row.pricePerM2 | number: '1.0-0' }}</td>
+                <td class="num" [class]="deltaClass(row.deltaVsZone)">
+                  {{ row.deltaVsZone > 0 ? '+' : '' }}{{ row.deltaVsZone | number: '1.0-0' }} %
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- PAGINACIÓN -->
+    <nav class="pagination" aria-label="Navegación de resultados">
+      <div class="pagination-info">
+        Mostrando {{ pageIndex() * pageSize() + 1 }} -
+        {{ Math.min((pageIndex() + 1) * pageSize(), rows().length) }} de {{ rows().length }} inmuebles
+      </div>
+
+      <div class="pagination-controls">
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="pageIndex() === 0"
+          (click)="setPage(pageIndex() - 1)"
+        >
+          ‹ Anterior
+        </button>
+
+        <span class="page-current">Página {{ pageIndex() + 1 }} de {{ totalPages() }}</span>
+
+        <button
+          type="button"
+          class="page-btn"
+          [disabled]="pageIndex() >= totalPages() - 1"
+          (click)="setPage(pageIndex() + 1)"
+        >
+          Siguiente ›
+        </button>
+      </div>
+
+      <div class="pagination-size">
+        <label for="pageSizeSelect">Ver por página:</label>
+        <select
+          id="pageSizeSelect"
+          [ngModel]="pageSize()"
+          (ngModelChange)="setPageSize(asNumber($event))"
+        >
+          <option [ngValue]="12">12</option>
+          <option [ngValue]="24">24</option>
+          <option [ngValue]="48">48</option>
+          <option [ngValue]="96">96</option>
+        </select>
+      </div>
+    </nav>
+  }
 }
