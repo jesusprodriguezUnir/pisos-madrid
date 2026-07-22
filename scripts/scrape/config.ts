@@ -55,11 +55,14 @@ export const ZONES: readonly ZoneConfig[] = [
   },
   { name: 'Ríos Rosas', slug: 'rios-rosas', idealista: 'madrid/chamberi/rios-rosas', fotocasa: 'rios-rosas' },
   { name: 'Arganzuela', slug: 'arganzuela', idealista: 'madrid/arganzuela', fotocasa: 'arganzuela' },
+  { name: 'Imperial', slug: 'imperial', idealista: 'madrid/arganzuela/imperial', fotocasa: 'imperial' },
   { name: 'Palacio', slug: 'palacio', idealista: 'madrid/centro/palacio', fotocasa: 'palacio' },
   {
     name: 'Malasaña',
     slug: 'malasana',
-    idealista: 'madrid/centro/universidad',
+    // El slug `universidad` redirige a la home de idealista (barrio inexistente);
+    // el segmento válido es `malasana-universidad`. Verificado 2026-07-22.
+    idealista: 'madrid/centro/malasana-universidad',
     fotocasa: 'universidad-malasana',
   },
 ];
