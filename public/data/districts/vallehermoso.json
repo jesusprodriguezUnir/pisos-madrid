@@ -1,0 +1,46 @@
+{
+    "source":  "idealista.com",
+    "scrapedAt":  "2026-07-21T05:19:12.904Z",
+    "total":  3,
+    "listings":  [
+                     {
+                         "id":  "112062174",
+                         "zone":  "Vallehermoso",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Valle, Vallehermoso",
+                         "price":  1750,
+                         "rooms":  2,
+                         "area":  94,
+                         "floor":  "1ª planta exterior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/112062174/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "112041445",
+                         "zone":  "Vallehermoso",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Bravo Murillo, Vallehermoso",
+                         "price":  1800,
+                         "rooms":  2,
+                         "area":  95,
+                         "floor":  "6ª planta exterior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/112041445/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "102022493",
+                         "zone":  "Vallehermoso",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Calle del Maestro Ángel Llorca, 3, Vallehermoso",
+                         "price":  1650,
+                         "rooms":  2,
+                         "area":  78,
+                         "floor":  "5ª planta exterior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/102022493/",
+                         "source":  "idealista"
+                     }
+                 ]
+}

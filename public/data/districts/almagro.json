@@ -1,0 +1,98 @@
+{
+    "source":  "idealista.com",
+    "scrapedAt":  "2026-07-21T05:19:12.904Z",
+    "total":  7,
+    "listings":  [
+                     {
+                         "id":  "111731167",
+                         "zone":  "Almagro",
+                         "operation":  "venta",
+                         "type":  "Piso",
+                         "address":  "Calle de Zurbano, Almagro",
+                         "price":  490000,
+                         "rooms":  2,
+                         "area":  70,
+                         "floor":  "Bajo interior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/111731167/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "111693455",
+                         "zone":  "Almagro",
+                         "operation":  "venta",
+                         "type":  "Piso",
+                         "address":  "Calle de Zurbano, Almagro",
+                         "price":  499000,
+                         "rooms":  2,
+                         "area":  80,
+                         "floor":  "Bajo interior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/111693455/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "91274746",
+                         "zone":  "Almagro",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Calle de García de Paredes, Almagro",
+                         "price":  1800,
+                         "rooms":  3,
+                         "area":  100,
+                         "floor":  "Entreplanta interior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/91274746/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "112012672",
+                         "zone":  "Almagro",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Calle de García de Paredes, Almagro",
+                         "price":  1800,
+                         "rooms":  2,
+                         "area":  90,
+                         "floor":  "6ª planta interior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/112012672/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "111908582",
+                         "zone":  "Almagro",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Calle de Caracas, 6, Almagro",
+                         "price":  1800,
+                         "rooms":  2,
+                         "area":  74,
+                         "floor":  "5ª planta interior sin ascensor",
+                         "url":  "https://www.idealista.com/inmueble/111908582/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "112057210",
+                         "zone":  "Almagro",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Calle de Caracas, 8, Almagro",
+                         "price":  1800,
+                         "rooms":  2,
+                         "area":  75,
+                         "floor":  "5ª planta interior sin ascensor",
+                         "url":  "https://www.idealista.com/inmueble/112057210/",
+                         "source":  "idealista"
+                     },
+                     {
+                         "id":  "111825332",
+                         "zone":  "Almagro",
+                         "operation":  "alquiler",
+                         "type":  "Piso",
+                         "address":  "Calle de Fernández de la Hoz, Madrid, 37, Almagro",
+                         "price":  1800,
+                         "rooms":  2,
+                         "area":  85,
+                         "floor":  "3ª planta exterior con ascensor",
+                         "url":  "https://www.idealista.com/inmueble/111825332/",
+                         "source":  "idealista"
+                     }
+                 ]
+}

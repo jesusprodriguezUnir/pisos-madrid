@@ -1,15 +1,15 @@
 import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname } from 'node:path';
 import type { Listing, ListingsDataset, Operation } from '../../src/app/core/models/listing.model';
-import { CRITERIA, OPERATIONS, OUTPUT_PATH, ZONES, buildUrl } from './config';
+import { CRITERIA, OPERATIONS, OUTPUT_DIR, OUTPUT_INDEX_PATH, ZONES, buildIdealistaUrl } from './config';
 import { parseListingsPage } from './parser';
+import { scrapeFotocasaZone, withFotocasaBrowser } from './fotocasa';
 
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function fetchPage(url: string): Promise<string | null> {
+async function fetchIdealistaPage(url: string): Promise<string | null> {
   const response = await fetch(url, {
     headers: {
       'user-agent': USER_AGENT,
@@ -32,63 +32,97 @@ async function fetchPage(url: string): Promise<string | null> {
   return response.text();
 }
 
-async function scrape(): Promise<Listing[]> {
+async function scrapeIdealistaZone(zone: (typeof ZONES)[number], operation: Operation): Promise<Listing[]> {
   const seen = new Set<string>();
   const listings: Listing[] = [];
 
-  for (const zone of ZONES) {
-    for (const operation of Object.keys(OPERATIONS) as Operation[]) {
-      for (let page = 1; page <= CRITERIA.maxPages; page++) {
-        const url = buildUrl(zone, operation, page);
-        const html = await fetchPage(url);
+  for (let page = 1; page <= CRITERIA.maxPages; page++) {
+    const url = buildIdealistaUrl(zone, operation, page);
+    const html = await fetchIdealistaPage(url);
 
-        if (html === null) {
-          console.warn(`  404  ${zone.name} / ${operation} / p${page} — ¿slug incorrecto?`);
-          break;
-        }
-
-        const parsed = parseListingsPage(html, zone.name, operation);
-        const fresh = parsed.filter((l) => !seen.has(l.id));
-        fresh.forEach((l) => seen.add(l.id));
-        listings.push(...fresh);
-
-        console.log(
-          `  ok   ${zone.name} / ${operation} / p${page} — ${parsed.length} anuncios (${fresh.length} nuevos)`,
-        );
-
-        // Sin más resultados: no tiene sentido pedir la página siguiente.
-        if (parsed.length === 0) break;
-
-        await sleep(CRITERIA.delayMs);
-      }
+    if (html === null) {
+      console.warn(`  404  idealista  ${zone.name} / ${operation} / p${page} — ¿slug incorrecto?`);
+      break;
     }
+
+    const parsed = parseListingsPage(html, zone.name, operation);
+    const fresh = parsed.filter((l) => !seen.has(l.id));
+    fresh.forEach((l) => seen.add(l.id));
+    listings.push(...fresh);
+
+    console.log(
+      `  ok   idealista  ${zone.name} / ${operation} / p${page} — ${parsed.length} anuncios (${fresh.length} nuevos)`,
+    );
+
+    if (parsed.length === 0) break;
+    await sleep(CRITERIA.delayMs);
   }
 
   return listings;
 }
 
 async function main(): Promise<void> {
-  console.log(`Scrapeando ${ZONES.length} zonas × 2 operaciones × ${CRITERIA.maxPages} páginas…`);
-  const listings = await scrape();
+  console.log(
+    `Scrapeando ${ZONES.length} distritos × 2 operaciones × 2 portales × ${CRITERIA.maxPages} páginas…`,
+  );
 
-  if (listings.length === 0) {
+  await mkdir(OUTPUT_DIR, { recursive: true });
+
+  let zonesWritten = 0;
+
+  await withFotocasaBrowser(async (browser) => {
+    for (const zone of ZONES) {
+      const listings: Listing[] = [];
+
+      for (const operation of Object.keys(OPERATIONS) as Operation[]) {
+        listings.push(...(await scrapeIdealistaZone(zone, operation)));
+
+        listings.push(
+          ...(await scrapeFotocasaZone(
+            browser,
+            zone,
+            operation,
+            CRITERIA.maxPages,
+            CRITERIA.delayMs,
+            (page, count) =>
+              console.log(`  ok   fotocasa   ${zone.name} / ${operation} / p${page} — ${count} anuncios`),
+          )),
+        );
+      }
+
+      if (listings.length === 0) {
+        console.warn(
+          `  ⚠   ${zone.name}: 0 anuncios en ambos portales — no se sobrescribe ${zone.slug}.json`,
+        );
+        continue;
+      }
+
+      const dataset: ListingsDataset = {
+        source: 'idealista.com + fotocasa.es',
+        scrapedAt: new Date().toISOString(),
+        total: listings.length,
+        listings,
+      };
+
+      await writeFile(`${OUTPUT_DIR}/${zone.slug}.json`, `${JSON.stringify(dataset, null, 1)}\n`, 'utf-8');
+      zonesWritten++;
+      console.log(`  ${listings.length} anuncios escritos en ${OUTPUT_DIR}/${zone.slug}.json`);
+    }
+  });
+
+  if (zonesWritten === 0) {
     throw new Error(
-      'El scraper no devolvió ningún anuncio. Revisa los selectores en scripts/scrape/parser.ts ' +
-        'antes de sobrescribir el dataset existente.',
+      'El scraper no devolvió ningún anuncio en ningún distrito. Revisa los selectores en ' +
+        'scripts/scrape/parser.ts y scripts/scrape/fotocasa-parser.ts antes de asumir que no hay oferta.',
     );
   }
 
-  const dataset: ListingsDataset = {
-    source: 'idealista.com',
-    scrapedAt: new Date().toISOString(),
-    total: listings.length,
-    listings,
-  };
+  // El índice se reescribe siempre a partir de ZONES, incluso si algún distrito
+  // no tuvo anuncios nuevos esta vez: la app necesita saber qué ficheros existen.
+  const index = ZONES.map((zone) => ({ name: zone.name, slug: zone.slug }));
+  await writeFile(OUTPUT_INDEX_PATH, `${JSON.stringify(index, null, 1)}\n`, 'utf-8');
 
-  await mkdir(dirname(OUTPUT_PATH), { recursive: true });
-  await writeFile(OUTPUT_PATH, `${JSON.stringify(dataset, null, 1)}\n`, 'utf-8');
-
-  console.log(`\n${listings.length} anuncios escritos en ${OUTPUT_PATH}`);
+  console.log(`\n${zonesWritten}/${ZONES.length} distritos actualizados.`);
 }
 
 main().catch((error: unknown) => {

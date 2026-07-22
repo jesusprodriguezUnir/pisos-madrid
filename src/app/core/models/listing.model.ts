@@ -5,7 +5,9 @@
 
 export type Operation = 'venta' | 'alquiler';
 
-/** Registro tal y como se persiste en `public/data/pisos.json`. */
+export type Source = 'idealista' | 'fotocasa';
+
+/** Registro tal y como se persiste en `public/data/districts/{slug}.json`. */
 export interface Listing {
   readonly id: string;
   readonly zone: string;
@@ -18,9 +20,11 @@ export interface Listing {
   readonly rooms: number;
   /** Superficie construida en m². */
   readonly area: number;
-  /** Texto original de idealista: "3ª planta exterior con ascensor". */
+  /** Texto original del portal: "3ª planta exterior con ascensor". */
   readonly floor: string;
   readonly url: string;
+  /** Portal de origen. Opcional por compatibilidad con datasets anteriores a la integración de Fotocasa. */
+  readonly source?: Source;
 }
 
 /** Listing + métricas derivadas. Se calcula en cliente, nunca se persiste. */
@@ -32,6 +36,12 @@ export interface EnrichedListing extends Listing {
   readonly deltaVsZone: number;
   readonly hasLift: boolean;
   readonly isExterior: boolean;
+}
+
+/** Entrada de `public/data/districts/index.json`: qué ficheros de distrito existen. */
+export interface DistrictIndexEntry {
+  readonly name: string;
+  readonly slug: string;
 }
 
 export interface ListingsDataset {

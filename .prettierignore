@@ -1,4 +1,4 @@
 dist/
 .angular/
 coverage/
-public/data/*.json
+public/data/**/*.json

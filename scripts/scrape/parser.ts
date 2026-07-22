@@ -1,6 +1,6 @@
 import { parse } from 'node-html-parser';
 import type { Listing, Operation } from '../../src/app/core/models/listing.model';
-import { BASE_URL, CRITERIA, OPERATIONS } from './config';
+import { CRITERIA, IDEALISTA_BASE_URL as BASE_URL, OPERATIONS } from './config';
 
 /** Extrae el primer entero de un texto, ignorando separadores de millar y símbolos. */
 export function toInt(text: string | undefined): number {
@@ -61,6 +61,7 @@ export function parseListingsPage(html: string, zone: string, operation: Operati
       area,
       floor,
       url: `${BASE_URL}${href}`,
+      source: 'idealista',
     });
   }
 

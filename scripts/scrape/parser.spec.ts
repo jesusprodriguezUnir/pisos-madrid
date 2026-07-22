@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildUrl } from './config';
+import { buildIdealistaUrl } from './config';
 import { extractId, parseListingsPage, splitTitle, toInt } from './parser';
 
 function article(options: {
@@ -77,6 +77,7 @@ describe('parseListingsPage', () => {
       area: 69,
       floor: 'Entreplanta exterior con ascensor',
       url: 'https://www.idealista.com/inmueble/112009758/',
+      source: 'idealista',
     });
   });
 
@@ -125,11 +126,11 @@ describe('parseListingsPage', () => {
   });
 });
 
-describe('buildUrl', () => {
-  const zone = { name: 'Chamberí', slug: 'madrid/chamberi' };
+describe('buildIdealistaUrl', () => {
+  const zone = { name: 'Chamberí', slug: 'chamberi', idealista: 'madrid/chamberi', fotocasa: 'chamberi' };
 
   it('construye la URL de la primera página sin sufijo de paginación', () => {
-    expect(buildUrl(zone, 'venta', 1)).toBe(
+    expect(buildIdealistaUrl(zone, 'venta', 1)).toBe(
       'https://www.idealista.com/venta-viviendas/madrid/chamberi/' +
         'con-precio-hasta_550000,metros-cuadrados-mas-de_60,' +
         'de-dos-dormitorios,de-tres-dormitorios,de-cuatro-cinco-habitaciones-o-mas/',
@@ -137,8 +138,8 @@ describe('buildUrl', () => {
   });
 
   it('añade el sufijo pagina-N.htm a partir de la segunda', () => {
-    expect(buildUrl(zone, 'alquiler', 3)).toContain('/pagina-3.htm');
-    expect(buildUrl(zone, 'alquiler', 3)).toContain('alquiler-viviendas');
-    expect(buildUrl(zone, 'alquiler', 3)).toContain('con-precio-hasta_1800');
+    expect(buildIdealistaUrl(zone, 'alquiler', 3)).toContain('/pagina-3.htm');
+    expect(buildIdealistaUrl(zone, 'alquiler', 3)).toContain('alquiler-viviendas');
+    expect(buildIdealistaUrl(zone, 'alquiler', 3)).toContain('con-precio-hasta_1800');
   });
 });
