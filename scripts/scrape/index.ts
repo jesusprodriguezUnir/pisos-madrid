@@ -23,8 +23,15 @@ async function fetchIdealistaPage(url: string): Promise<string | null> {
   const response = await fetch(url, {
     headers: {
       'user-agent': USER_AGENT,
-      'accept-language': 'es-ES,es;q=0.9',
-      accept: 'text/html,application/xhtml+xml',
+      'accept-language': 'es-ES,es;q=0.9,en;q=0.8',
+      accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+      'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-fetch-dest': 'document',
+      'sec-fetch-mode': 'navigate',
+      'sec-fetch-site': 'none',
+      'sec-fetch-user': '?1',
     },
   });
 
@@ -32,8 +39,7 @@ async function fetchIdealistaPage(url: string): Promise<string | null> {
 
   if (response.status === 403 || response.status === 429) {
     throw new Error(
-      `Bloqueado por idealista (HTTP ${response.status}) en ${url}. ` +
-        'Probablemente DataDome: sube CRITERIA.delayMs o ejecuta el scraper desde una IP residencial.',
+      `Bloqueado por idealista (HTTP ${response.status}) en ${url}. Probablemente DataDome.`,
     );
   }
 
@@ -48,24 +54,29 @@ async function scrapeIdealistaZone(zone: (typeof ZONES)[number], operation: Oper
 
   for (let page = 1; page <= CRITERIA.maxPages; page++) {
     const url = buildIdealistaUrl(zone, operation, page);
-    const html = await fetchIdealistaPage(url);
+    try {
+      const html = await fetchIdealistaPage(url);
 
-    if (html === null) {
-      console.warn(`  404  idealista  ${zone.name} / ${operation} / p${page} — ¿slug incorrecto?`);
+      if (html === null) {
+        console.warn(`  404  idealista  ${zone.name} / ${operation} / p${page} — ¿slug incorrecto?`);
+        break;
+      }
+
+      const parsed = parseListingsPage(html, zone.name, operation);
+      const fresh = parsed.filter((l) => !seen.has(l.id));
+      fresh.forEach((l) => seen.add(l.id));
+      listings.push(...fresh);
+
+      console.log(
+        `  ok   idealista  ${zone.name} / ${operation} / p${page} — ${parsed.length} anuncios (${fresh.length} nuevos)`,
+      );
+
+      if (parsed.length === 0) break;
+      await sleep(CRITERIA.delayMs);
+    } catch (err) {
+      console.warn(`  ⚠   idealista  ${zone.name} / ${operation}: ${(err as Error).message}`);
       break;
     }
-
-    const parsed = parseListingsPage(html, zone.name, operation);
-    const fresh = parsed.filter((l) => !seen.has(l.id));
-    fresh.forEach((l) => seen.add(l.id));
-    listings.push(...fresh);
-
-    console.log(
-      `  ok   idealista  ${zone.name} / ${operation} / p${page} — ${parsed.length} anuncios (${fresh.length} nuevos)`,
-    );
-
-    if (parsed.length === 0) break;
-    await sleep(CRITERIA.delayMs);
   }
 
   return listings;

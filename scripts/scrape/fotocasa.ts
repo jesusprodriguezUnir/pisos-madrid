@@ -12,7 +12,10 @@ const USER_AGENT =
  * reutiliza para todo el scrape porque lanzar Chromium por página es lento.
  */
 export async function withFotocasaBrowser<T>(fn: (browser: Browser) => Promise<T>): Promise<T> {
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    args: ['--disable-blink-features=AutomationControlled', '--no-sandbox'],
+  });
   try {
     return await fn(browser);
   } finally {
@@ -25,6 +28,16 @@ async function extractCards(browser: Browser, url: string): Promise<RawFotocasaC
     userAgent: USER_AGENT,
     locale: 'es-ES',
     viewport: { width: 1366, height: 900 },
+    extraHTTPHeaders: {
+      'accept-language': 'es-ES,es;q=0.9,en;q=0.8',
+      'sec-ch-ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"Windows"',
+    },
+  });
+
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
   });
 
   try {
@@ -37,11 +50,26 @@ async function extractCards(browser: Browser, url: string): Promise<RawFotocasaC
       );
     }
 
+    // Intentar cerrar el banner de cookies si está presente
+    try {
+      const cookieBtn = page
+        .locator(
+          '#didomi-notice-agree-button, button[id*="didomi"], button:has-text("Aceptar"), button:has-text("Aceptar y cerrar")',
+        )
+        .first();
+      if (await cookieBtn.isVisible({ timeout: 2_500 })) {
+        await cookieBtn.click();
+        await page.waitForTimeout(1_000);
+      }
+    } catch {
+      // Ignorar si no aparece el diálogo de consentimiento
+    }
+
     // Los anuncios se pintan tras cargar; esperamos al primer enlace de detalle
     // en vez de a un selector de tarjeta concreto (más robusto, ver fotocasa-parser.ts).
-    const anchorSelector = 'a[href*="/vivienda/"]';
+    const anchorSelector = 'a[href*="/vivienda/"], a[href*="/inmueble/"]';
     try {
-      await page.waitForSelector(anchorSelector, { timeout: 8_000 });
+      await page.waitForSelector(anchorSelector, { timeout: 10_000 });
     } catch {
       return []; // página cargó pero sin anuncios (zona vacía o bloqueo silencioso)
     }
@@ -49,9 +77,10 @@ async function extractCards(browser: Browser, url: string): Promise<RawFotocasaC
     return await page.$$eval(anchorSelector, (anchors) =>
       anchors.map((a) => {
         let container: Element = a;
-        for (let i = 0; i < 6 && container.parentElement; i++) {
+        for (let i = 0; i < 10 && container.parentElement; i++) {
           container = container.parentElement;
-          if (/€/.test(container.textContent ?? '') && (container.textContent?.length ?? 0) < 2_000) {
+          const text = container.textContent ?? '';
+          if ((/€/.test(text) || /hab|dorm|m[²2]/i.test(text)) && text.length > 20 && text.length < 3_000) {
             break;
           }
         }

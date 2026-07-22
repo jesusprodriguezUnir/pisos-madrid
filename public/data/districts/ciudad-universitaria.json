@@ -1,0 +1,20 @@
+{
+ "source": "idealista.com + fotocasa.es",
+ "scrapedAt": "2026-07-22T14:17:59.754Z",
+ "total": 1,
+ "listings": [
+  {
+   "id": "190297704",
+   "zone": "Ciudad Universitaria",
+   "operation": "alquiler",
+   "type": "Piso con piscina",
+   "address": "Piso con piscina en Carballino, Ciudad Universitaria",
+   "price": 1150,
+   "rooms": 2,
+   "area": 80,
+   "floor": "bajo consulta",
+   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/aire-acondicionado-calefaccion-terraza-trastero-ascensor-piscina-no-amueblado/190297704/d",
+   "source": "fotocasa"
+  }
+ ]
+}

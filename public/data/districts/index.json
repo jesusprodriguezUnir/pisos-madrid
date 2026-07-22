@@ -46,5 +46,17 @@
  {
   "name": "Ríos Rosas",
   "slug": "rios-rosas"
+ },
+ {
+  "name": "Arganzuela",
+  "slug": "arganzuela"
+ },
+ {
+  "name": "Palacio",
+  "slug": "palacio"
+ },
+ {
+  "name": "Malasaña",
+  "slug": "malasana"
  }
 ]

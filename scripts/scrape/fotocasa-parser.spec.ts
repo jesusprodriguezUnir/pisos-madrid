@@ -17,6 +17,15 @@ describe('extractFotocasaId', () => {
     );
   });
 
+  it('extrae el id numérico de URLs con o sin sufijo /d o con parámetros', () => {
+    expect(extractFotocasaId('/es/comprar/vivienda/madrid-capital/arguelles/157057420')).toBe(
+      '157057420',
+    );
+    expect(extractFotocasaId('/es/comprar/vivienda/madrid-capital/arguelles/157057420?from=list')).toBe(
+      '157057420',
+    );
+  });
+
   it('devuelve null si el href no es una ficha de detalle', () => {
     expect(extractFotocasaId('/es/comprar/viviendas/madrid-capital/arguelles/l')).toBeNull();
   });
@@ -38,6 +47,20 @@ describe('parseFotocasaCards', () => {
       source: 'fotocasa',
     });
     expect(listing.url).toContain('157057420');
+  });
+
+  it('soporta variaciones de texto como "dorm." o "dormitorios"', () => {
+    const dormCard = card({
+      href: '/es/comprar/vivienda/madrid-capital/arguelles/157057421/d',
+      text: 'Piso en Argüelles € 420.000 2 dorm. 75 m² 3ª planta',
+    });
+    const [listing] = parseFotocasaCards([dormCard], 'Argüelles', 'venta');
+    expect(listing).toMatchObject({
+      id: '157057421',
+      rooms: 2,
+      area: 75,
+      price: 420_000,
+    });
   });
 
   it('descarta tarjetas por debajo de los mínimos de habitaciones o superficie', () => {

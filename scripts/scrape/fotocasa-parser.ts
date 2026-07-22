@@ -17,11 +17,11 @@ export interface RawFotocasaCard {
   readonly title: string;
 }
 
-const ID_RE = /\/(\d+)\/d\/?$/;
-const ROOMS_RE = /(\d+)\s*hab/i;
+const ID_RE = /\/(\d{6,12})(?:\/d)?(?:\?.*)?$/;
+const ROOMS_RE = /(\d+)\s*(?:hab|dorm|habitaci[oó]n|dormitorio)/i;
 const AREA_RE = /(\d+)\s*m[²2]/i;
-const PRICE_RE = /([\d.,]+)\s*€/;
-const FLOOR_RE = /(planta|bajo|entreplanta|ático|semis[oó]tano)[^,.\n]*/i;
+const PRICE_RE = /(?:([\d.,]+)\s*€|€\s*([\d.,]+))/;
+const FLOOR_RE = /(planta|bajo|entreplanta|ático|semis[oó]tano|principal)[^,.\n]*/i;
 
 export function extractFotocasaId(href: string): string | null {
   return ID_RE.exec(href)?.[1] ?? null;
@@ -50,7 +50,8 @@ export function parseFotocasaCards(
 
     const rooms = toInt(ROOMS_RE.exec(card.text)?.[1]);
     const area = toInt(AREA_RE.exec(card.text)?.[1]);
-    const price = toInt(PRICE_RE.exec(card.text)?.[1]);
+    const priceMatch = PRICE_RE.exec(card.text);
+    const price = toInt(priceMatch?.[1] ?? priceMatch?.[2]);
     const floor = FLOOR_RE.exec(card.text)?.[0]?.trim() ?? '';
 
     if (rooms < CRITERIA.minRooms || area < CRITERIA.minArea) continue;
