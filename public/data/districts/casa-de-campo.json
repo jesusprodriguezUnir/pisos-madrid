@@ -1,7 +1,7 @@
 {
- "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-07-22T14:18:27.326Z",
- "total": 3,
+ "source": "fotocasa.es",
+ "scrapedAt": "2026-07-22T15:58:24.902Z",
+ "total": 10,
  "listings": [
   {
    "id": "190133719",
@@ -40,6 +40,97 @@
    "area": 100,
    "floor": "PlantaValtierHace 5 días",
    "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/aire-acondicionado-parking-ascensor-no-amueblado/190257122/d",
+   "source": "fotocasa"
+  },
+  {
+   "id": "190177191",
+   "zone": "Casa de Campo",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Calle Santa Comba, Moncloa - Aravaca",
+   "price": 499500,
+   "rooms": 3,
+   "area": 80,
+   "floor": "6ª planta exterior con ascensor",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/190177191/d",
+   "source": "fotocasa"
+  },
+  {
+   "id": "190150705",
+   "zone": "Casa de Campo",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Moncloa - Aravaca",
+   "price": 385000,
+   "rooms": 3,
+   "area": 65,
+   "floor": "7ª planta exterior con ascensor",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/190150705/d",
+   "source": "fotocasa"
+  },
+  {
+   "id": "188559418",
+   "zone": "Casa de Campo",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Moncloa - Aravaca",
+   "price": 499000,
+   "rooms": 3,
+   "area": 94,
+   "floor": "Bajo sin ascensor",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/188559418/d",
+   "source": "fotocasa"
+  },
+  {
+   "id": "190301856",
+   "zone": "Casa de Campo",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Moncloa - Aravaca",
+   "price": 400000,
+   "rooms": 2,
+   "area": 60,
+   "floor": "8ª planta exterior con ascensor",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/190301856/d",
+   "source": "fotocasa"
+  },
+  {
+   "id": "187686314",
+   "zone": "Casa de Campo",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Calle de Santa Pola 11, Moncloa - Aravaca",
+   "price": 380000,
+   "rooms": 3,
+   "area": 83,
+   "floor": "Bajo sin ascensor",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/187686314/d",
+   "source": "fotocasa"
+  },
+  {
+   "id": "188961799",
+   "zone": "Casa de Campo",
+   "operation": "alquiler",
+   "type": "Piso",
+   "address": "De Vicente Camaron, Moncloa - Aravaca",
+   "price": 1350,
+   "rooms": 2,
+   "area": 65,
+   "floor": "Bajo exterior con ascensor",
+   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/188961799/d",
+   "source": "fotocasa"
+  },
+  {
+   "id": "190164117",
+   "zone": "Casa de Campo",
+   "operation": "alquiler",
+   "type": "Piso",
+   "address": "Doctor Casal, Moncloa - Aravaca",
+   "price": 1500,
+   "rooms": 4,
+   "area": 104,
+   "floor": "Bajo exterior con ascensor",
+   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/190164117/d",
    "source": "fotocasa"
   }
  ]
