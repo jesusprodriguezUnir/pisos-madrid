@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   PRICE_CEILING,
@@ -14,7 +21,32 @@ import {
 } from '../../core/models/listing.model';
 import { ListingsService } from '../../core/services/listings.service';
 import { FavoritesService } from '../../core/services/favorites.service';
-import { applyFilters, exportToCsv, exportToJson, sortListings, summarize } from '../../core/utils/listing-stats';
+import {
+  applyFilters,
+  exportToCsv,
+  exportToJson,
+  median,
+  sortListings,
+  summarize,
+} from '../../core/utils/listing-stats';
+
+export interface MarketZoneStat {
+  readonly zone: string;
+  readonly ppm2: number;
+  readonly min: number;
+  readonly count: number;
+}
+
+export interface MapCell extends MarketZoneStat {
+  readonly heat: number;
+  readonly active: boolean;
+}
+
+export interface ThermoInfo {
+  readonly pct: number;
+  readonly color: 'good' | 'bad' | 'neutral';
+  readonly label: string;
+}
 
 const DEFAULT_FILTERS: ListingFilters = {
   operation: 'venta',
@@ -48,7 +80,7 @@ const DEFAULT_NEW_LISTING = {
 
 @Component({
   selector: 'app-listings-page',
-  imports: [FormsModule, DecimalPipe, DatePipe],
+  imports: [FormsModule, DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './listings-page.html',
   styleUrl: './listings-page.css',
@@ -61,11 +93,10 @@ export class ListingsPage {
   protected readonly error = this.service.error;
   protected readonly zones = this.service.zones;
   protected readonly propertyTypes = this.service.propertyTypes;
-  protected readonly scrapedAt = this.service.scrapedAt;
-  protected readonly totalCount = computed(() => this.service.listings().length);
 
   protected readonly operations: readonly Operation[] = ['venta', 'alquiler'];
   protected readonly availableSources: readonly Source[] = ['idealista', 'fotocasa'];
+  protected readonly roomOptions: readonly number[] = [2, 3, 4];
   protected readonly Math = Math;
 
   protected readonly filters = signal<ListingFilters>(this.loadFiltersFromUrl());
@@ -97,7 +128,76 @@ export class ListingsPage {
 
   protected readonly summary = computed(() => summarize(this.rows()));
 
-  protected readonly totalPages = computed(() => Math.max(1, Math.ceil(this.rows().length / this.pageSize())));
+  // Vista "Chollos": ranking de las mejores oportunidades del conjunto filtrado (todas las zonas/páginas).
+  protected readonly rankRows = computed(() =>
+    [...this.rows()].sort((a, b) => a.deltaVsZone - b.deltaVsZone).slice(0, 12),
+  );
+
+  // KPIs del hero: recuentos globales (no afectados por filtros, solo por la operación activa).
+  protected readonly heroKpis = computed(() => {
+    const all = this.service.listings();
+    const opAll = all.filter((l) => l.operation === this.filters().operation);
+    const zonesWith = new Set(opAll.map((l) => l.zone));
+    return [
+      { value: all.length.toLocaleString('es-ES'), label: 'inmuebles' },
+      { value: String(zonesWith.size), label: 'barrios' },
+      {
+        value: Math.round(median(opAll.map((l) => l.pricePerM2))).toLocaleString('es-ES'),
+        label: '€/m² mediano',
+      },
+      { value: String(opAll.filter((l) => l.deltaVsZone <= -10).length), label: 'chollos' },
+    ];
+  });
+
+  // Panorama de mercado: mediana de €/m² por barrio para la operación activa.
+  private readonly marketByZone = computed<MarketZoneStat[]>(() => {
+    const opAll = this.service.listings().filter((l) => l.operation === this.filters().operation);
+    const byZone = new Map<string, typeof opAll>();
+    for (const l of opAll) {
+      const bucket = byZone.get(l.zone);
+      if (bucket) bucket.push(l);
+      else byZone.set(l.zone, [l]);
+    }
+    return [...byZone.entries()].map(([zone, listings]) => ({
+      zone,
+      ppm2: Math.round(median(listings.map((l) => l.pricePerM2))),
+      min: Math.min(...listings.map((l) => l.price)),
+      count: listings.length,
+    }));
+  });
+
+  protected readonly marketRows = computed(() =>
+    [...this.marketByZone()].sort((a, b) => b.ppm2 - a.ppm2),
+  );
+
+  protected readonly mapCells = computed<MapCell[]>(() => {
+    const stats = this.marketByZone();
+    const values = stats.map((s) => s.ppm2);
+    const lo = Math.min(...values, 0);
+    const hi = Math.max(...values, 0);
+    const activeZones = new Set(this.filters().zones);
+    return [...stats]
+      .sort((a, b) => a.zone.localeCompare(b.zone, 'es'))
+      .map((s) => ({
+        ...s,
+        heat: hi > lo ? (s.ppm2 - lo) / (hi - lo) : 0.5,
+        active: activeZones.has(s.zone),
+      }));
+  });
+
+  // Comparador: hasta 3 inmuebles lado a lado.
+  protected readonly compareIds = signal<readonly string[]>([]);
+
+  protected readonly compareRows = computed(() => {
+    const byId = new Map(this.service.listings().map((l) => [l.id, l] as const));
+    return this.compareIds()
+      .map((id) => byId.get(id))
+      .filter((l): l is NonNullable<typeof l> => l !== undefined);
+  });
+
+  protected readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.rows().length / this.pageSize())),
+  );
 
   protected readonly paginatedRows = computed(() => {
     const start = this.pageIndex() * this.pageSize();
@@ -106,7 +206,9 @@ export class ListingsPage {
 
   protected readonly priceCeiling = computed(() => PRICE_CEILING[this.filters().operation]);
   protected readonly priceStep = computed(() => PRICE_STEP[this.filters().operation]);
-  protected readonly priceUnit = computed(() => (this.filters().operation === 'venta' ? '€' : '€/mes'));
+  protected readonly priceUnit = computed(() =>
+    this.filters().operation === 'venta' ? '€' : '€/mes',
+  );
 
   protected readonly activeFiltersCount = computed(() => {
     const f = this.filters();
@@ -228,6 +330,48 @@ export class ListingsPage {
     return 'delta-neutral';
   }
 
+  protected thermo(delta: number): ThermoInfo {
+    const clamped = Math.max(-25, Math.min(25, delta));
+    const pct = ((clamped + 25) / 50) * 100;
+    const rounded = Math.round(delta);
+    const label = rounded === 0 ? '0 %' : `${rounded > 0 ? '+' : '−'}${Math.abs(rounded)} %`;
+    return {
+      pct,
+      color:
+        this.deltaClass(delta) === 'delta-good'
+          ? 'good'
+          : this.deltaClass(delta) === 'delta-bad'
+            ? 'bad'
+            : 'neutral',
+      label,
+    };
+  }
+
+  protected toggleCompare(id: string): void {
+    this.compareIds.update((current) =>
+      current.includes(id)
+        ? current.filter((x) => x !== id)
+        : current.length >= 3
+          ? current
+          : [...current, id],
+    );
+  }
+
+  protected clearCompare(): void {
+    this.compareIds.set([]);
+  }
+
+  protected isComparing(id: string): boolean {
+    return this.compareIds().includes(id);
+  }
+
+  protected compareExtras(listing: { hasLift: boolean; isExterior: boolean }): string {
+    const extras = [listing.hasLift ? 'Ascensor' : '', listing.isExterior ? 'Exterior' : ''].filter(
+      (extra) => extra !== '',
+    );
+    return extras.length > 0 ? extras.join(', ') : '—';
+  }
+
   protected asNumber(value: string): number {
     return Number(value);
   }
@@ -283,7 +427,8 @@ export class ListingsPage {
       if (filters.minRooms !== 2) params.set('minRooms', String(filters.minRooms));
       if (filters.minArea !== 60) params.set('minArea', String(filters.minArea));
       if (filters.minPrice > 0) params.set('minPrice', String(filters.minPrice));
-      if (filters.maxPrice < PRICE_CEILING[filters.operation]) params.set('maxPrice', String(filters.maxPrice));
+      if (filters.maxPrice < PRICE_CEILING[filters.operation])
+        params.set('maxPrice', String(filters.maxPrice));
       if (filters.query.trim()) params.set('query', filters.query.trim());
       if (filters.sources.length > 0) params.set('sources', filters.sources.join(','));
       if (filters.types.length > 0) params.set('types', filters.types.join(','));
@@ -339,7 +484,9 @@ export class ListingsPage {
   protected async submitNewListing(): Promise<void> {
     const form = this.newListing();
     if (!form.address.trim() || !form.price || !form.area || !form.rooms) {
-      this.addModalError.set('Por favor, completa los campos obligatorios: dirección, precio, m² y habitaciones.');
+      this.addModalError.set(
+        'Por favor, completa los campos obligatorios: dirección, precio, m² y habitaciones.',
+      );
       return;
     }
 
@@ -373,7 +520,9 @@ export class ListingsPage {
       await this.service.addListing(listing);
       this.closeAddModal();
     } catch (err: unknown) {
-      this.addModalError.set(err instanceof Error ? err.message : 'Error al guardar el inmueble en la base de datos');
+      this.addModalError.set(
+        err instanceof Error ? err.message : 'Error al guardar el inmueble en la base de datos',
+      );
     } finally {
       this.isSaving.set(false);
     }

@@ -52,7 +52,7 @@ export interface ListingsDataset {
   readonly listings: readonly Listing[];
 }
 
-export type ViewMode = 'table' | 'cards';
+export type ViewMode = 'chollos' | 'cards' | 'table';
 
 export interface ListingFilters {
   readonly operation: Operation;

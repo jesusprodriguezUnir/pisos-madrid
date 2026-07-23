@@ -1,0 +1,1645 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <link
+          rel="stylesheet"
+          href="_ds/modernist-f497ceee-ba91-434a-b377-00b0dc739391/styles.css"
+        />
+        <script src="_ds/modernist-f497ceee-ba91-434a-b377-00b0dc739391/_ds_bundle.js"></script>
+        <style>
+          .lc:hover {
+            box-shadow: var(--shadow-md);
+          }
+          .mapcell:hover {
+            outline: 2px solid var(--color-accent);
+            outline-offset: -2px;
+          }
+          .rowh:hover {
+            background: color-mix(in srgb, var(--color-text) 4%, transparent);
+          }
+          input[type='range'] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 2px;
+            background: var(--color-divider);
+            width: 100%;
+          }
+          input[type='range']::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--color-accent);
+            cursor: pointer;
+          }
+          input[type='range']::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border: 0;
+            background: var(--color-accent);
+            cursor: pointer;
+          }
+        </style>
+      </helmet>
+      <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px 80px">
+        <sc-if value="{{ heroPoster }}" hint-placeholder-val="{{ true }}">
+          <header
+            style="
+              background: var(--color-accent);
+              color: var(--color-bg);
+              margin: 0 -24px 0;
+              padding: 48px 24px 40px;
+            "
+          >
+            <div style="max-width: 1280px; margin: 0 auto">
+              <div
+                style="
+                  font: 600 12px/1 var(--font-heading);
+                  letter-spacing: 0.18em;
+                  text-transform: uppercase;
+                  opacity: 0.85;
+                  margin-bottom: 18px;
+                "
+              >
+                Buscador de vivienda · normalizado por €/m²
+              </div>
+              <h1
+                style="
+                  font: 800 clamp(56px, 9vw, 120px)/0.92 var(--font-heading);
+                  letter-spacing: -0.03em;
+                  margin: 0;
+                "
+              >
+                PISOS<br />MADRID
+              </h1>
+              <p
+                style="
+                  max-width: 640px;
+                  font-size: 15px;
+                  line-height: 1.5;
+                  margin: 20px 0 0;
+                  opacity: 0.92;
+                "
+              >
+                Cada anuncio se compara con la
+                <b>mediana de €/m² de su propio barrio y operación</b>. Así se ve, de un vistazo, si
+                un piso de Chamberí está caro o barato <i>para lo que es</i>.
+              </p>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  gap: 0;
+                  margin-top: 36px;
+                  border-top: 2px solid rgba(255, 255, 255, 0.5);
+                "
+              >
+                <sc-for list="{{ heroKpis }}" as="k" hint-placeholder-count="4">
+                  <div
+                    style="
+                      padding: 18px 20px 0 0;
+                      border-right: 1px solid rgba(255, 255, 255, 0.35);
+                    "
+                  >
+                    <div style="font: 800 40px/1 var(--font-heading); letter-spacing: -0.02em">
+                      {{ k.value }}
+                    </div>
+                    <div
+                      style="
+                        font-size: 11px;
+                        letter-spacing: 0.1em;
+                        text-transform: uppercase;
+                        opacity: 0.82;
+                        margin-top: 8px;
+                      "
+                    >
+                      {{ k.label }}
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </header>
+        </sc-if>
+        <sc-if value="{{ heroCompact }}" hint-placeholder-val="{{ false }}">
+          <header
+            style="
+              padding: 28px 0 20px;
+              border-bottom: 2px solid var(--color-divider);
+              display: flex;
+              align-items: flex-end;
+              justify-content: space-between;
+              gap: 24px;
+              flex-wrap: wrap;
+            "
+          >
+            <div>
+              <div
+                style="
+                  font: 600 11px/1 var(--font-heading);
+                  letter-spacing: 0.16em;
+                  text-transform: uppercase;
+                  color: var(--color-accent);
+                  margin-bottom: 10px;
+                "
+              >
+                Buscador · €/m² normalizado
+              </div>
+              <h1 style="font-size: 44px; margin: 0">Pisos · Madrid</h1>
+            </div>
+            <div style="display: flex; gap: 0; border-left: 2px solid var(--color-divider)">
+              <sc-for list="{{ heroKpis }}" as="k" hint-placeholder-count="4">
+                <div style="padding: 2px 20px; border-right: 1px solid var(--color-divider)">
+                  <div style="font: 800 26px/1 var(--font-heading)">{{ k.value }}</div>
+                  <div
+                    style="
+                      font-size: 10px;
+                      letter-spacing: 0.09em;
+                      text-transform: uppercase;
+                      color: var(--color-neutral-600);
+                      margin-top: 6px;
+                    "
+                  >
+                    {{ k.label }}
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </header>
+        </sc-if>
+
+        <section
+          style="border: 2px solid var(--color-divider); border-top: 0; padding: 20px 22px"
+          aria-label="Filtros"
+        >
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px">
+            <span
+              style="
+                font: 800 13px/1 var(--font-heading);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+              "
+              >Filtros</span
+            >
+            <sc-if value="{{ hasActiveFilters }}" hint-placeholder-val="{{ false }}">
+              <span class="tag tag-accent" style="border-radius: 0">{{ activeFiltersLabel }}</span>
+            </sc-if>
+            <button
+              onClick="{{ resetFilters }}"
+              style="
+                margin-left: auto;
+                background: transparent;
+                border: 1px solid var(--color-divider);
+                color: var(--color-text);
+                font: 600 12px/1 var(--font-heading);
+                padding: 7px 12px;
+                cursor: pointer;
+              "
+              style-hover="background:color-mix(in srgb, var(--color-text) 7%, transparent)"
+            >
+              Restablecer
+            </button>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+              gap: 22px 32px;
+            "
+          >
+            <div>
+              <div
+                style="
+                  font-size: 11px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--color-neutral-600);
+                  margin-bottom: 10px;
+                "
+              >
+                Operación
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <sc-for list="{{ opChips }}" as="c" hint-placeholder-count="2">
+                  <button
+                    data-op="{{ c.id }}"
+                    onClick="{{ setOp }}"
+                    style="{{ c.style }}"
+                    style-hover="filter:brightness(.97)"
+                  >
+                    {{ c.label }}
+                  </button>
+                </sc-for>
+              </div>
+              <div
+                style="
+                  font-size: 11px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--color-neutral-600);
+                  margin: 18px 0 10px;
+                "
+              >
+                Fuente
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <sc-for list="{{ sourceChips }}" as="c" hint-placeholder-count="2">
+                  <button
+                    data-src="{{ c.id }}"
+                    onClick="{{ toggleSource }}"
+                    style="{{ c.style }}"
+                    style-hover="filter:brightness(.97)"
+                  >
+                    {{ c.label }}
+                  </button>
+                </sc-for>
+              </div>
+              <div
+                style="
+                  font-size: 11px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--color-neutral-600);
+                  margin: 18px 0 10px;
+                "
+              >
+                Habitaciones mín.
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <sc-for list="{{ roomChips }}" as="c" hint-placeholder-count="3">
+                  <button
+                    data-r="{{ c.id }}"
+                    onClick="{{ setRooms }}"
+                    style="{{ c.style }}"
+                    style-hover="filter:brightness(.97)"
+                  >
+                    {{ c.label }}
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div
+                style="
+                  font-size: 11px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--color-neutral-600);
+                  margin-bottom: 10px;
+                "
+              >
+                Zona
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <sc-for list="{{ zoneChips }}" as="c" hint-placeholder-count="8">
+                  <button
+                    data-zone="{{ c.id }}"
+                    onClick="{{ toggleZone }}"
+                    style="{{ c.style }}"
+                    style-hover="filter:brightness(.97)"
+                  >
+                    {{ c.label }}
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+
+            <div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: baseline;
+                  margin-bottom: 8px;
+                "
+              >
+                <span
+                  style="
+                    font-size: 11px;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: var(--color-neutral-600);
+                  "
+                  >Superficie mín.</span
+                >
+                <span style="font: 800 13px/1 var(--font-heading)">{{ minArea }} m²</span>
+              </div>
+              <input
+                type="range"
+                min="60"
+                max="150"
+                step="5"
+                value="{{ minArea }}"
+                onInput="{{ onArea }}"
+                aria-label="Superficie mínima"
+              />
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: baseline;
+                  margin: 20px 0 8px;
+                "
+              >
+                <span
+                  style="
+                    font-size: 11px;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: var(--color-neutral-600);
+                  "
+                  >Precio máx.</span
+                >
+                <span style="font: 800 13px/1 var(--font-heading)"
+                  >{{ maxPriceFmt }} {{ priceUnit }}</span
+                >
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="{{ priceCeiling }}"
+                step="{{ priceStep }}"
+                value="{{ maxPrice }}"
+                onInput="{{ onMaxPrice }}"
+                aria-label="Precio máximo"
+              />
+              <div style="margin-top: 20px">
+                <input
+                  type="text"
+                  value="{{ query }}"
+                  onInput="{{ onQuery }}"
+                  placeholder="Buscar calle, barrio, tipo…"
+                  style="
+                    width: 100%;
+                    min-height: 38px;
+                    padding: 8px 12px;
+                    font: 14px var(--font-body);
+                    color: var(--color-text);
+                    background: var(--color-surface);
+                    border: 1px solid var(--color-divider);
+                    border-radius: 0;
+                  "
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="
+              margin-top: 20px;
+              padding-top: 18px;
+              border-top: 1px solid var(--color-divider);
+              display: flex;
+              gap: 8px;
+              flex-wrap: wrap;
+            "
+          >
+            <sc-for list="{{ extraChips }}" as="c" hint-placeholder-count="4">
+              <button
+                data-flag="{{ c.id }}"
+                onClick="{{ toggleExtra }}"
+                style="{{ c.style }}"
+                style-hover="filter:brightness(.97)"
+              >
+                {{ c.label }}
+              </button>
+            </sc-for>
+          </div>
+        </section>
+
+        <div
+          style="
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              gap: 0;
+              flex: 1;
+              min-width: 340px;
+              border: 2px solid var(--color-divider);
+            "
+          >
+            <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
+              <div style="{{ s.style }}">
+                <div
+                  style="font:800 clamp(20px,2.4vw,30px)/1 var(--font-heading); letter-spacing:-.01em; color:{{
+                    s.color
+                  }};"
+                >
+                  {{ s.value }}
+                </div>
+                <div
+                  style="
+                    font-size: 10px;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                    color: var(--color-neutral-600);
+                    margin-top: 8px;
+                  "
+                >
+                  {{ s.label }}
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 0;
+              border: 2px solid var(--color-divider);
+              align-self: flex-start;
+            "
+          >
+            <sc-for list="{{ viewTabs }}" as="v" hint-placeholder-count="3">
+              <button
+                data-view="{{ v.id }}"
+                onClick="{{ setView }}"
+                style="{{ v.style }}"
+                style-hover="filter:brightness(.97)"
+              >
+                {{ v.label }}
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+          <div
+            style="
+              border: 2px solid var(--color-divider);
+              border-top: 0;
+              padding: 60px 24px;
+              text-align: center;
+            "
+          >
+            <p style="font: 800 20px var(--font-heading); margin: 0 0 6px">Sin resultados</p>
+            <p style="color: var(--color-neutral-600); margin: 0 0 18px">
+              Ningún inmueble encaja con estos filtros.
+            </p>
+            <button onClick="{{ resetFilters }}" class="btn btn-primary" style="border-radius: 0">
+              Restablecer filtros
+            </button>
+          </div>
+        </sc-if>
+
+        <!-- VISTA CHOLLOS -->
+        <sc-if value="{{ viewChollos }}" hint-placeholder-val="{{ false }}">
+          <section style="border: 2px solid var(--color-divider); border-top: 0">
+            <div
+              style="
+                padding: 14px 20px;
+                border-bottom: 2px solid var(--color-divider);
+                display: flex;
+                align-items: baseline;
+                gap: 12px;
+              "
+            >
+              <span style="font: 800 15px var(--font-heading)">Ranking de chollos</span>
+              <span style="font-size: 12px; color: var(--color-neutral-600)"
+                >ordenado por diferencia frente a la mediana del barrio</span
+              >
+            </div>
+            <sc-for list="{{ rankRows }}" as="r" hint-placeholder-count="8">
+              <div
+                class="rowh"
+                style="
+                  display: grid;
+                  grid-template-columns: 56px 1fr 150px 200px 44px;
+                  align-items: center;
+                  gap: 16px;
+                  padding: 14px 20px;
+                  border-bottom: 1px solid var(--color-divider);
+                "
+              >
+                <div style="font:800 30px/1 var(--font-heading); color:{{ r.rankColor }};">
+                  {{ r.rank }}
+                </div>
+                <div style="min-width: 0">
+                  <a
+                    href="{{ r.url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style="
+                      font: 800 16px/1.15 var(--font-heading);
+                      color: var(--color-text);
+                      text-decoration: none;
+                      display: block;
+                    "
+                    >{{ r.title }}</a
+                  >
+                  <div style="font-size: 12px; color: var(--color-neutral-600); margin-top: 4px">
+                    {{ r.zone }} · {{ r.rooms }} hab · {{ r.area }} m² · {{ r.pricePerM2 }} €/m²
+                  </div>
+                </div>
+                <div style="text-align: right">
+                  <div style="font: 800 20px/1 var(--font-heading)">
+                    {{ r.priceFmt }}
+                    <span
+                      style="font-size: 12px; font-weight: 400; color: var(--color-neutral-600)"
+                      >{{ r.unit }}</span
+                    >
+                  </div>
+                </div>
+                <div>{{ r.thermo }}</div>
+                <button
+                  data-id="{{ r.id }}"
+                  onClick="{{ toggleFav }}"
+                  title="Favorito"
+                  style="{{ r.favStyle }}"
+                  style-hover="filter:brightness(.97)"
+                >
+                  ★
+                </button>
+              </div>
+            </sc-for>
+          </section>
+        </sc-if>
+
+        <!-- VISTA TARJETAS -->
+        <sc-if value="{{ viewCards }}" hint-placeholder-val="{{ true }}">
+          <section
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+              gap: 20px;
+              margin-top: 20px;
+            "
+          >
+            <sc-for list="{{ pageRows }}" as="r" hint-placeholder-count="6">
+              <article
+                class="lc"
+                style="
+                  border: 2px solid var(--color-divider);
+                  background: var(--color-surface);
+                  display: flex;
+                  flex-direction: column;
+                  transition: box-shadow 0.15s;
+                "
+              >
+                <sc-if value="{{ showPhotos }}" hint-placeholder-val="{{ true }}">
+                  <div
+                    class="grayscale"
+                    style="
+                      position: relative;
+                      aspect-ratio: 16/10;
+                      background: repeating-linear-gradient(
+                        135deg,
+                        var(--color-neutral-200),
+                        var(--color-neutral-200) 12px,
+                        var(--color-neutral-300) 12px,
+                        var(--color-neutral-300) 24px
+                      );
+                      display: flex;
+                      align-items: flex-end;
+                      padding: 10px;
+                    "
+                  >
+                    <span
+                      style="
+                        font: 600 10px/1 var(--font-heading);
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                        color: var(--color-neutral-700);
+                        background: var(--color-bg);
+                        padding: 4px 7px;
+                      "
+                      >Foto no disponible</span
+                    >
+                    <sc-if value="{{ r.isBargain }}" hint-placeholder-val="{{ false }}">
+                      <span
+                        style="
+                          position: absolute;
+                          top: 0;
+                          left: 0;
+                          background: var(--color-accent);
+                          color: var(--color-bg);
+                          font: 800 11px/1 var(--font-heading);
+                          letter-spacing: 0.08em;
+                          text-transform: uppercase;
+                          padding: 7px 10px;
+                        "
+                        >★ Chollo</span
+                      >
+                    </sc-if>
+                  </div>
+                </sc-if>
+                <div
+                  style="
+                    padding: 14px 16px 16px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                    flex: 1;
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 8px">
+                    <span
+                      style="
+                        font: 600 11px/1 var(--font-heading);
+                        letter-spacing: 0.05em;
+                        text-transform: uppercase;
+                        color: var(--color-accent);
+                      "
+                      >{{ r.zone }}</span
+                    >
+                    <span
+                      style="
+                        font-size: 10px;
+                        letter-spacing: 0.05em;
+                        text-transform: uppercase;
+                        color: var(--color-neutral-600);
+                        border: 1px solid var(--color-divider);
+                        padding: 2px 6px;
+                      "
+                      >{{ r.source }}</span
+                    >
+                    <sc-if value="{{ r.bargainNoPhoto }}" hint-placeholder-val="{{ false }}">
+                      <span
+                        style="
+                          background: var(--color-accent);
+                          color: var(--color-bg);
+                          font: 800 10px/1 var(--font-heading);
+                          letter-spacing: 0.06em;
+                          text-transform: uppercase;
+                          padding: 4px 7px;
+                        "
+                        >★ Chollo</span
+                      >
+                    </sc-if>
+                    <div style="margin-left: auto; display: flex; gap: 6px">
+                      <button
+                        data-id="{{ r.id }}"
+                        onClick="{{ toggleCompare }}"
+                        title="Comparar"
+                        style="{{ r.cmpStyle }}"
+                        style-hover="filter:brightness(.97)"
+                      >
+                        ⇄
+                      </button>
+                      <button
+                        data-id="{{ r.id }}"
+                        onClick="{{ toggleFav }}"
+                        title="Favorito"
+                        style="{{ r.favStyle }}"
+                        style-hover="filter:brightness(.97)"
+                      >
+                        ★
+                      </button>
+                    </div>
+                  </div>
+                  <a
+                    href="{{ r.url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style="
+                      font: 800 17px/1.15 var(--font-heading);
+                      color: var(--color-text);
+                      text-decoration: none;
+                    "
+                    >{{ r.title }}</a
+                  >
+                  <div
+                    style="
+                      display: flex;
+                      align-items: baseline;
+                      justify-content: space-between;
+                      gap: 10px;
+                    "
+                  >
+                    <div style="font: 800 26px/1 var(--font-heading)">
+                      {{ r.priceFmt }}
+                      <span
+                        style="font-size: 13px; font-weight: 400; color: var(--color-neutral-600)"
+                        >{{ r.unit }}</span
+                      >
+                    </div>
+                    <div
+                      style="font: 800 15px/1 var(--font-heading); color: var(--color-neutral-700)"
+                    >
+                      {{ r.pricePerM2 }} €/m²
+                    </div>
+                  </div>
+                  <div>{{ r.thermo }}</div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 6px;
+                      flex-wrap: wrap;
+                      margin-top: auto;
+                      padding-top: 4px;
+                    "
+                  >
+                    <span
+                      style="
+                        font-size: 11px;
+                        border: 1px solid var(--color-divider);
+                        padding: 3px 8px;
+                      "
+                      >🛏 {{ r.rooms }} hab</span
+                    >
+                    <span
+                      style="
+                        font-size: 11px;
+                        border: 1px solid var(--color-divider);
+                        padding: 3px 8px;
+                      "
+                      >📐 {{ r.area }} m²</span
+                    >
+                    <sc-for list="{{ r.tags }}" as="t" hint-placeholder-count="1">
+                      <span
+                        style="
+                          font-size: 11px;
+                          border: 1px solid var(--color-divider);
+                          padding: 3px 8px;
+                        "
+                        >{{ t }}</span
+                      >
+                    </sc-for>
+                  </div>
+                </div>
+              </article>
+            </sc-for>
+          </section>
+        </sc-if>
+
+        <!-- VISTA TABLA -->
+        <sc-if value="{{ viewTable }}" hint-placeholder-val="{{ false }}">
+          <section style="border: 2px solid var(--color-divider); border-top: 0; overflow-x: auto">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px">
+              <thead>
+                <tr>
+                  <th
+                    style="
+                      width: 36px;
+                      padding: 12px 10px;
+                      border-bottom: 2px solid var(--color-divider);
+                    "
+                  ></th>
+                  <sc-for list="{{ tableCols }}" as="col" hint-placeholder-count="7">
+                    <th style="{{ col.style }}">
+                      <button
+                        data-key="{{ col.key }}"
+                        onClick="{{ sortBy }}"
+                        style="
+                          background: transparent;
+                          border: 0;
+                          font: inherit;
+                          color: inherit;
+                          cursor: pointer;
+                          padding: 0;
+                        "
+                      >
+                        {{ col.label }}
+                      </button>
+                    </th>
+                  </sc-for>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ pageRows }}" as="r" hint-placeholder-count="10">
+                  <tr class="rowh">
+                    <td
+                      style="
+                        padding: 10px;
+                        border-bottom: 1px solid var(--color-divider);
+                        text-align: center;
+                      "
+                    >
+                      <button
+                        data-id="{{ r.id }}"
+                        onClick="{{ toggleFav }}"
+                        style="{{ r.favMini }}"
+                        style-hover="filter:brightness(.97)"
+                      >
+                        ★
+                      </button>
+                    </td>
+                    <td style="padding: 10px; border-bottom: 1px solid var(--color-divider)">
+                      <a
+                        href="{{ r.url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style="
+                          font: 600 14px var(--font-heading);
+                          color: var(--color-text);
+                          text-decoration: none;
+                        "
+                        >{{ r.title }}</a
+                      >
+                      <div
+                        style="font-size: 11px; color: var(--color-neutral-600); margin-top: 2px"
+                      >
+                        {{ r.floorMeta }}
+                      </div>
+                    </td>
+                    <td style="padding: 10px; border-bottom: 1px solid var(--color-divider)">
+                      <span class="tag tag-neutral" style="border-radius: 0">{{ r.zone }}</span>
+                    </td>
+                    <td
+                      style="
+                        padding: 10px;
+                        border-bottom: 1px solid var(--color-divider);
+                        text-align: right;
+                      "
+                    >
+                      {{ r.rooms }}
+                    </td>
+                    <td
+                      style="
+                        padding: 10px;
+                        border-bottom: 1px solid var(--color-divider);
+                        text-align: right;
+                      "
+                    >
+                      {{ r.area }}
+                    </td>
+                    <td
+                      style="
+                        padding: 10px;
+                        border-bottom: 1px solid var(--color-divider);
+                        text-align: right;
+                      "
+                    >
+                      <b>{{ r.priceFmt }}</b> {{ r.unit }}
+                    </td>
+                    <td
+                      style="
+                        padding: 10px;
+                        border-bottom: 1px solid var(--color-divider);
+                        text-align: right;
+                      "
+                    >
+                      {{ r.pricePerM2 }}
+                    </td>
+                    <td
+                      style="padding:10px; border-bottom:1px solid var(--color-divider); text-align:right; font-weight:800; color:{{
+                        r.deltaColor
+                      }};"
+                    >
+                      {{ r.deltaStr }}
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </section>
+        </sc-if>
+
+        <!-- PAGINACIÓN -->
+        <sc-if value="{{ showPagination }}" hint-placeholder-val="{{ false }}">
+          <nav
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 16px;
+              flex-wrap: wrap;
+              margin-top: 20px;
+              padding-top: 16px;
+              border-top: 1px solid var(--color-divider);
+            "
+          >
+            <div style="font-size: 12px; color: var(--color-neutral-600)">{{ pageInfo }}</div>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <button
+                onClick="{{ prevPage }}"
+                style="{{ prevStyle }}"
+                style-hover="background:color-mix(in srgb, var(--color-text) 7%, transparent)"
+              >
+                ‹ Anterior
+              </button>
+              <span style="font: 800 13px var(--font-heading)">{{ pageLabel }}</span>
+              <button
+                onClick="{{ nextPage }}"
+                style="{{ nextStyle }}"
+                style-hover="background:color-mix(in srgb, var(--color-text) 7%, transparent)"
+              >
+                Siguiente ›
+              </button>
+            </div>
+          </nav>
+        </sc-if>
+
+        <!-- PANORAMA DE MERCADO -->
+        <section style="margin-top: 52px">
+          <div
+            style="
+              display: flex;
+              align-items: baseline;
+              gap: 12px;
+              border-bottom: 2px solid var(--color-divider);
+              padding-bottom: 10px;
+              margin-bottom: 20px;
+            "
+          >
+            <h2 style="font-size: 26px; margin: 0">Panorama de mercado</h2>
+            <span style="font-size: 12px; color: var(--color-neutral-600)"
+              >{{ opLabel }} · €/m² mediano por barrio</span
+            >
+          </div>
+          <div
+            style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 36px; align-items: start"
+          >
+            <div>
+              <div
+                style="
+                  font-size: 11px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--color-neutral-600);
+                  margin-bottom: 12px;
+                "
+              >
+                Esquema de barrios — pulsa para filtrar
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                  gap: 2px;
+                  background: var(--color-divider);
+                  border: 2px solid var(--color-divider);
+                "
+              >
+                <sc-for list="{{ mapCells }}" as="m" hint-placeholder-count="8">
+                  <button
+                    class="mapcell"
+                    data-zone="{{ m.zone }}"
+                    onClick="{{ toggleZone }}"
+                    style="{{ m.style }}"
+                  >
+                    <div style="font: 800 12px/1.1 var(--font-heading)">{{ m.zone }}</div>
+                    <div style="font: 800 18px/1 var(--font-heading); margin-top: 8px">
+                      {{ m.ppm2 }}
+                    </div>
+                    <div
+                      style="
+                        font-size: 9px;
+                        letter-spacing: 0.06em;
+                        text-transform: uppercase;
+                        opacity: 0.75;
+                        margin-top: 3px;
+                      "
+                    >
+                      €/m² · {{ m.count }} inm.
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  margin-top: 12px;
+                  font-size: 10px;
+                  letter-spacing: 0.06em;
+                  text-transform: uppercase;
+                  color: var(--color-neutral-600);
+                "
+              >
+                <span>Más barato</span>
+                <div
+                  style="
+                    flex: 1;
+                    height: 8px;
+                    background: linear-gradient(90deg, var(--color-bg), var(--color-accent));
+                  "
+                ></div>
+                <span>Más caro</span>
+              </div>
+            </div>
+            <div>
+              <div
+                style="
+                  font-size: 11px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--color-neutral-600);
+                  margin-bottom: 12px;
+                "
+              >
+                Ranking de barrios
+              </div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px">
+                <thead>
+                  <tr>
+                    <th
+                      style="
+                        text-align: left;
+                        font-size: 10px;
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                        color: var(--color-neutral-600);
+                        padding: 8px;
+                        border-bottom: 2px solid var(--color-divider);
+                      "
+                    >
+                      Barrio
+                    </th>
+                    <th
+                      style="
+                        text-align: right;
+                        font-size: 10px;
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                        color: var(--color-neutral-600);
+                        padding: 8px;
+                        border-bottom: 2px solid var(--color-divider);
+                      "
+                    >
+                      €/m²
+                    </th>
+                    <th
+                      style="
+                        text-align: right;
+                        font-size: 10px;
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                        color: var(--color-neutral-600);
+                        padding: 8px;
+                        border-bottom: 2px solid var(--color-divider);
+                      "
+                    >
+                      Desde
+                    </th>
+                    <th
+                      style="
+                        text-align: right;
+                        font-size: 10px;
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                        color: var(--color-neutral-600);
+                        padding: 8px;
+                        border-bottom: 2px solid var(--color-divider);
+                      "
+                    >
+                      Inm.
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <sc-for list="{{ marketRows }}" as="m" hint-placeholder-count="6">
+                    <tr class="rowh">
+                      <td
+                        style="
+                          padding: 9px 8px;
+                          border-bottom: 1px solid var(--color-divider);
+                          font-weight: 600;
+                        "
+                      >
+                        {{ m.zone }}
+                      </td>
+                      <td
+                        style="
+                          padding: 9px 8px;
+                          border-bottom: 1px solid var(--color-divider);
+                          text-align: right;
+                          font-weight: 800;
+                        "
+                      >
+                        {{ m.ppm2 }}
+                      </td>
+                      <td
+                        style="
+                          padding: 9px 8px;
+                          border-bottom: 1px solid var(--color-divider);
+                          text-align: right;
+                          color: var(--color-neutral-700);
+                        "
+                      >
+                        {{ m.min }} {{ priceUnit }}
+                      </td>
+                      <td
+                        style="
+                          padding: 9px 8px;
+                          border-bottom: 1px solid var(--color-divider);
+                          text-align: right;
+                          color: var(--color-neutral-600);
+                        "
+                      >
+                        {{ m.count }}
+                      </td>
+                    </tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- COMPARADOR STICKY -->
+        <sc-if value="{{ hasCompare }}" hint-placeholder-val="{{ false }}">
+          <div
+            style="
+              position: sticky;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              margin: 40px -24px 0;
+              background: var(--color-text);
+              color: var(--color-bg);
+              box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.25);
+            "
+          >
+            <div style="max-width: 1280px; margin: 0 auto; padding: 16px 24px">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px">
+                <span
+                  style="
+                    font: 800 13px var(--font-heading);
+                    letter-spacing: 0.06em;
+                    text-transform: uppercase;
+                  "
+                  >Comparador</span
+                >
+                <span style="font-size: 12px; opacity: 0.7">{{ compareInfo }}</span>
+                <button
+                  onClick="{{ clearCompare }}"
+                  style="
+                    margin-left: auto;
+                    background: transparent;
+                    border: 1px solid rgba(255, 255, 255, 0.4);
+                    color: var(--color-bg);
+                    font: 600 12px var(--font-heading);
+                    padding: 6px 12px;
+                    cursor: pointer;
+                  "
+                  style-hover="background:rgba(255,255,255,.12)"
+                >
+                  Vaciar
+                </button>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                  gap: 16px;
+                "
+              >
+                <sc-for list="{{ compareCols }}" as="c" hint-placeholder-count="2">
+                  <div style="border: 1px solid rgba(255, 255, 255, 0.25); padding: 12px 14px">
+                    <div style="display: flex; justify-content: space-between; gap: 8px">
+                      <span
+                        style="
+                          font: 600 11px var(--font-heading);
+                          letter-spacing: 0.05em;
+                          text-transform: uppercase;
+                          opacity: 0.8;
+                        "
+                        >{{ c.zone }}</span
+                      >
+                      <button
+                        data-id="{{ c.id }}"
+                        onClick="{{ toggleCompare }}"
+                        style="
+                          background: transparent;
+                          border: 0;
+                          color: var(--color-bg);
+                          cursor: pointer;
+                          opacity: 0.7;
+                          font-size: 14px;
+                        "
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div style="font: 800 15px/1.2 var(--font-heading); margin: 8px 0">
+                      {{ c.title }}
+                    </div>
+                    <div style="font: 800 24px/1 var(--font-heading)">
+                      {{ c.priceFmt }}
+                      <span style="font-size: 12px; font-weight: 400; opacity: 0.7">{{
+                        c.unit
+                      }}</span>
+                    </div>
+                    <div
+                      style="
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 6px 12px;
+                        margin-top: 12px;
+                        font-size: 12px;
+                      "
+                    >
+                      <span style="opacity: 0.65">€/m²</span
+                      ><span style="text-align: right; font-weight: 700">{{ c.pricePerM2 }}</span>
+                      <span style="opacity: 0.65">vs zona</span
+                      ><span
+                        style="text-align:right; font-weight:800; color:{{ c.deltaColorDark }};"
+                        >{{ c.deltaStr }}</span
+                      >
+                      <span style="opacity: 0.65">Hab · m²</span
+                      ><span style="text-align: right; font-weight: 700"
+                        >{{ c.rooms }} · {{ c.area }}</span
+                      >
+                      <span style="opacity: 0.65">Extras</span
+                      ><span style="text-align: right">{{ c.extras }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <footer
+          style="
+            margin-top: 44px;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-divider);
+            font-size: 11px;
+            color: var(--color-neutral-600);
+          "
+        >
+          Datos agregados de idealista.com y fotocasa.es con fines personales. Precios y
+          disponibilidad pueden variar; verifica siempre en el anuncio original. El % «vs zona»
+          compara con la mediana de €/m² del par (barrio, operación).
+        </footer>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"heroStyle":{"editor":"enum","options":["poster","compact"],"default":"poster","tsType":"&apos;poster&apos;|&apos;compact&apos;","section":"Diseño"},"showPhotos":{"editor":"boolean","default":true,"tsType":"boolean","section":"Diseño"},"defaultView":{"editor":"enum","options":["chollos","cards","table"],"default":"cards","tsType":"&apos;chollos&apos;|&apos;cards&apos;|&apos;table&apos;","section":"Diseño"}}'
+    >
+      class Component extends DCLogic {
+        constructor(props) {
+          super(props);
+          this.all = this.enrich(RAW);
+          this.state = {
+            operation: 'venta',
+            zones: [], sources: [], minRooms: 2, minArea: 60, maxPrice: 550000,
+            query: '', requireLift: false, requireExterior: false, onlyBelowMedian: false, onlyFavorites: false,
+            view: null, page: 0, sortKey: 'delta', sortDir: 1,
+            favs: {}, compares: [],
+          };
+        }
+
+        median(arr) {
+          if (!arr.length) return 0;
+          const s = [...arr].sort((a, b) => a - b);
+          const m = Math.floor(s.length / 2);
+          return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+        }
+
+        enrich(list) {
+          const buckets = {};
+          for (const l of list) {
+            const k = l.zone + '|' + l.operation;
+            (buckets[k] || (buckets[k] = [])).push(l.price / l.area);
+          }
+          const med = {};
+          for (const k in buckets) med[k] = this.median(buckets[k]);
+          return list.map((l) => {
+            const ppm2 = l.price / l.area;
+            const zm = med[l.zone + '|' + l.operation] || ppm2;
+            const delta = ((ppm2 - zm) / zm) * 100;
+            const f = l.floor || '';
+            return {
+              ...l,
+              pricePerM2: Math.round(ppm2),
+              zoneMedian: Math.round(zm),
+              deltaVsZone: delta,
+              hasLift: /ascensor/i.test(f) && !/sin ascensor/i.test(f),
+              isExterior: /exterior/i.test(f),
+            };
+          });
+        }
+
+        ceiling() { return this.state.operation === 'venta' ? 550000 : 1800; }
+        step() { return this.state.operation === 'venta' ? 5000 : 25; }
+        unit() { return this.state.operation === 'venta' ? '€' : '€/mes'; }
+        fmt(n) { return Math.round(n).toLocaleString('es-ES'); }
+        view() { return this.state.view || (this.props.defaultView || 'cards'); }
+
+        set(patch) { this.setState((s) => ({ ...s, page: 0, ...patch })); }
+
+        chipStyle(on) {
+          const base = 'padding:7px 13px;font:600 13px/1 var(--font-heading);cursor:pointer;border-radius:0;white-space:nowrap;';
+          return on
+            ? base + 'background:var(--color-accent);color:var(--color-bg);border:1px solid var(--color-accent);'
+            : base + 'background:transparent;color:var(--color-text);border:1px solid var(--color-divider);';
+        }
+
+        filtered() {
+          const s = this.state;
+          const q = s.query.trim().toLowerCase();
+          return this.all.filter((l) =>
+            l.operation === s.operation &&
+            (s.zones.length === 0 || s.zones.includes(l.zone)) &&
+            (s.sources.length === 0 || s.sources.includes(l.source)) &&
+            l.rooms >= s.minRooms && l.area >= s.minArea && l.price <= s.maxPrice &&
+            (!s.requireLift || l.hasLift) && (!s.requireExterior || l.isExterior) &&
+            (!s.onlyBelowMedian || l.deltaVsZone <= -10) &&
+            (!s.onlyFavorites || s.favs[l.id]) &&
+            (q === '' || (l.address + ' ' + l.type + ' ' + l.zone).toLowerCase().includes(q))
+          );
+        }
+
+        sortRows(rows) {
+          const { sortKey, sortDir } = this.state;
+          const getk = (r) => ({
+            address: r.address, zone: r.zone, rooms: r.rooms, area: r.area,
+            price: r.price, pricePerM2: r.pricePerM2, delta: r.deltaVsZone,
+          }[sortKey]);
+          return [...rows].sort((a, b) => {
+            const va = getk(a), vb = getk(b);
+            if (typeof va === 'string') return va.localeCompare(vb) * sortDir;
+            return (va - vb) * sortDir;
+          });
+        }
+
+        deltaColor(d, dark) {
+          if (d <= -10) return 'var(--color-accent)';
+          if (d >= 8) return dark ? '#ffb3a8' : 'var(--color-text)';
+          return dark ? 'rgba(255,255,255,.75)' : 'var(--color-neutral-600)';
+        }
+
+        deltaStr(d) {
+          const r = Math.round(d);
+          if (r === 0) return '0 %';
+          return (r > 0 ? '+' : '−') + Math.abs(r) + ' %';
+        }
+
+        thermo(d) {
+          const clamped = Math.max(-25, Math.min(25, d));
+          const pct = ((clamped + 25) / 50) * 100;
+          const col = this.deltaColor(d, false);
+          const label = this.deltaStr(d) + ' vs zona';
+          return React.createElement('div', { style: { width: '100%' } },
+            React.createElement('div', { style: { position: 'relative', height: '6px', background: 'var(--color-neutral-300)' } },
+              React.createElement('div', { style: { position: 'absolute', left: '50%', top: '-3px', bottom: '-3px', width: '2px', background: 'var(--color-neutral-500)' } }),
+              React.createElement('div', { style: { position: 'absolute', top: '-3px', width: '12px', height: '12px', background: col, left: 'calc(' + pct + '% - 6px)' } })
+            ),
+            React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', marginTop: '5px', font: '600 10px var(--font-heading)', color: 'var(--color-neutral-600)' } },
+              React.createElement('span', null, 'barato'),
+              React.createElement('span', { style: { color: col, fontWeight: 800 } }, label),
+              React.createElement('span', null, 'caro')
+            )
+          );
+        }
+
+        shape(r) {
+          const tags = [];
+          if (r.hasLift) tags.push('🛗 Ascensor');
+          if (r.isExterior) tags.push('☀ Exterior');
+          const isBargain = r.deltaVsZone <= -10;
+          const cmpOn = this.state.compares.includes(r.id);
+          const favOn = !!this.state.favs[r.id];
+          return {
+            id: r.id, url: r.url, zone: r.zone, source: r.source || 'idealista',
+            title: r.type + ' · ' + r.address, rooms: r.rooms, area: r.area,
+            priceFmt: this.fmt(r.price), unit: this.unit(), pricePerM2: this.fmt(r.pricePerM2),
+            deltaStr: this.deltaStr(r.deltaVsZone), deltaColor: this.deltaColor(r.deltaVsZone, false),
+            isBargain, bargainNoPhoto: isBargain && !(this.props.showPhotos ?? true),
+            thermo: this.thermo(r.deltaVsZone), tags,
+            floorMeta: (r.floor || '—') + ' · ' + (r.source || 'idealista'),
+            favStyle: this.iconBtn(favOn, '#ffd000'),
+            favMini: this.miniBtn(favOn),
+            cmpStyle: this.iconBtn(cmpOn, 'var(--color-accent)'),
+          };
+        }
+
+        iconBtn(on, onColor) {
+          const base = 'width:32px;height:32px;flex:none;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border-radius:0;font-size:15px;line-height:1;';
+          return on
+            ? base + 'background:var(--color-accent);color:var(--color-bg);border:1px solid var(--color-accent);'
+            : base + 'background:transparent;color:var(--color-neutral-600);border:1px solid var(--color-divider);';
+        }
+        miniBtn(on) {
+          return 'background:transparent;border:0;cursor:pointer;font-size:16px;line-height:1;color:' + (on ? 'var(--color-accent)' : 'var(--color-neutral-400)') + ';';
+        }
+
+        renderVals() {
+          const s = this.state;
+          const heroStyle = this.props.heroStyle || 'poster';
+          const view = this.view();
+          const filtered = this.filtered();
+          const sorted = this.sortRows(filtered);
+
+          // Hero KPIs (global for current operation)
+          const opAll = this.all.filter((l) => l.operation === s.operation);
+          const zonesWith = [...new Set(opAll.map((l) => l.zone))];
+          const heroKpis = [
+            { value: this.fmt(this.all.length), label: 'inmuebles' },
+            { value: String(zonesWith.length), label: 'barrios' },
+            { value: this.fmt(this.median(opAll.map((l) => l.pricePerM2))), label: '€/m² mediano' },
+            { value: String(opAll.filter((l) => l.deltaVsZone <= -10).length), label: 'chollos' },
+          ];
+
+          // Stats for filtered
+          const cnt = filtered.length;
+          const statCards = [
+            { value: String(cnt), label: 'Resultados', color: 'var(--color-text)' },
+            { value: cnt ? this.fmt(this.median(filtered.map((l) => l.price))) + ' ' + this.unit() : '—', label: 'Precio mediano', color: 'var(--color-text)' },
+            { value: cnt ? this.fmt(Math.min(...filtered.map((l) => l.price))) + ' ' + this.unit() : '—', label: 'Más barato', color: 'var(--color-text)' },
+            { value: String(filtered.filter((l) => l.deltaVsZone <= -10).length), label: '≥10% bajo mediana', color: 'var(--color-accent)' },
+          ].map((c, i) => ({ ...c, style: 'flex:1;padding:16px 18px;' + (i ? 'border-left:1px solid var(--color-divider);' : '') }));
+
+          // Chips
+          const opChips = [
+            { id: 'venta', label: 'Venta', style: this.chipStyle(s.operation === 'venta') },
+            { id: 'alquiler', label: 'Alquiler', style: this.chipStyle(s.operation === 'alquiler') },
+          ];
+          const sourceChips = [
+            { id: 'idealista', label: 'Idealista', style: this.chipStyle(s.sources.includes('idealista')) },
+            { id: 'fotocasa', label: 'Fotocasa', style: this.chipStyle(s.sources.includes('fotocasa')) },
+          ];
+          const roomChips = [2, 3, 4].map((r) => ({ id: String(r), label: r + '+', style: this.chipStyle(s.minRooms === r) }));
+          const allZones = [...new Set(this.all.filter((l) => l.operation === s.operation).map((l) => l.zone))].sort();
+          const zoneChips = allZones.map((z) => ({ id: z, label: z, style: this.chipStyle(s.zones.includes(z)) }));
+          const extraChips = [
+            { id: 'requireLift', label: '🛗 Ascensor', on: s.requireLift },
+            { id: 'requireExterior', label: '☀ Exterior', on: s.requireExterior },
+            { id: 'onlyBelowMedian', label: '🏷 Bajo mediana', on: s.onlyBelowMedian },
+            { id: 'onlyFavorites', label: '★ Favoritos', on: s.onlyFavorites },
+          ].map((c) => ({ ...c, style: this.chipStyle(c.on) }));
+
+          const viewTabs = [
+            { id: 'chollos', label: 'Chollos' },
+            { id: 'cards', label: 'Tarjetas' },
+            { id: 'table', label: 'Tabla' },
+          ].map((v) => ({ id: v.id, label: v.label, style: this.tabStyle(view === v.id) }));
+
+          // Rows
+          const rank = [...filtered].sort((a, b) => a.deltaVsZone - b.deltaVsZone).slice(0, 12);
+          const rankRows = rank.map((r, i) => {
+            const sh = this.shape(r);
+            return { ...sh, rank: String(i + 1).padStart(2, '0'), rankColor: i < 3 ? 'var(--color-accent)' : 'var(--color-neutral-400)' };
+          });
+
+          const pageSize = 12;
+          const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+          const page = Math.min(s.page, totalPages - 1);
+          const pageSlice = sorted.slice(page * pageSize, page * pageSize + pageSize);
+          const pageRows = pageSlice.map((r) => this.shape(r));
+
+          const tableCols = [
+            { key: 'address', label: 'Inmueble', align: 'left' },
+            { key: 'zone', label: 'Zona', align: 'left' },
+            { key: 'rooms', label: 'Hab', align: 'right' },
+            { key: 'area', label: 'm²', align: 'right' },
+            { key: 'price', label: 'Precio', align: 'right' },
+            { key: 'pricePerM2', label: '€/m²', align: 'right' },
+            { key: 'delta', label: 'vs zona', align: 'right' },
+          ].map((c) => ({ ...c, style: 'padding:12px 10px;border-bottom:2px solid var(--color-divider);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-600);text-align:' + c.align + (this.state.sortKey === c.key ? ';color:var(--color-accent)' : '') }));
+
+          // Market + map (current operation, per zone)
+          const byZone = {};
+          for (const l of opAll) (byZone[l.zone] || (byZone[l.zone] = [])).push(l);
+          const marketAll = Object.keys(byZone).map((z) => {
+            const arr = byZone[z];
+            return { zone: z, ppm2: Math.round(this.median(arr.map((l) => l.pricePerM2))), min: Math.min(...arr.map((l) => l.price)), count: arr.length };
+          }).sort((a, b) => b.ppm2 - a.ppm2);
+          const marketRows = marketAll.map((m) => ({ zone: m.zone, ppm2: this.fmt(m.ppm2), min: this.fmt(m.min), count: String(m.count) }));
+          const pvals = marketAll.map((m) => m.ppm2);
+          const lo = Math.min(...pvals), hi = Math.max(...pvals);
+          const mapCells = [...marketAll].sort((a, b) => a.zone.localeCompare(b.zone)).map((m) => {
+            const t = hi > lo ? (m.ppm2 - lo) / (hi - lo) : 0.5;
+            const active = s.zones.includes(m.zone);
+            const bg = 'color-mix(in srgb, var(--color-accent) ' + Math.round(t * 88 + 6) + '%, var(--color-bg))';
+            const fg = t > 0.55 ? 'var(--color-bg)' : 'var(--color-text)';
+            return {
+              zone: m.zone, ppm2: this.fmt(m.ppm2), count: String(m.count),
+              style: 'text-align:left;cursor:pointer;padding:12px 12px 14px;border:0;background:' + bg + ';color:' + fg + ';' + (active ? 'outline:3px solid var(--color-text);outline-offset:-3px;' : ''),
+            };
+          });
+
+          // Compare
+          const compareData = s.compares.map((id) => this.all.find((l) => l.id === id)).filter(Boolean);
+          const compareCols = compareData.map((r) => {
+            const ex = [];
+            if (r.hasLift) ex.push('Ascensor');
+            if (r.isExterior) ex.push('Exterior');
+            return {
+              id: r.id, zone: r.zone, title: r.type + ' · ' + r.address,
+              priceFmt: this.fmt(r.price), unit: this.unit(), pricePerM2: this.fmt(r.pricePerM2),
+              deltaStr: this.deltaStr(r.deltaVsZone), deltaColorDark: this.deltaColor(r.deltaVsZone, true),
+              rooms: r.rooms, area: r.area, extras: ex.length ? ex.join(', ') : '—',
+            };
+          });
+
+          const activeCount = (s.zones.length ? 1 : 0) + (s.sources.length ? 1 : 0) + (s.minRooms > 2 ? 1 : 0) +
+            (s.minArea > 60 ? 1 : 0) + (s.maxPrice < this.ceiling() ? 1 : 0) + (s.query.trim() ? 1 : 0) +
+            (s.requireLift ? 1 : 0) + (s.requireExterior ? 1 : 0) + (s.onlyBelowMedian ? 1 : 0) + (s.onlyFavorites ? 1 : 0);
+
+          return {
+            heroPoster: heroStyle === 'poster', heroCompact: heroStyle === 'compact',
+            heroKpis, statCards, opChips, sourceChips, roomChips, zoneChips, extraChips, viewTabs,
+            showPhotos: this.props.showPhotos ?? true,
+            hasActiveFilters: activeCount > 0, activeFiltersLabel: activeCount + ' activo' + (activeCount > 1 ? 's' : ''),
+            minArea: s.minArea, maxPrice: s.maxPrice, maxPriceFmt: this.fmt(s.maxPrice),
+            priceCeiling: this.ceiling(), priceStep: this.step(), priceUnit: this.unit(), query: s.query,
+            isEmpty: cnt === 0,
+            viewChollos: view === 'chollos', viewCards: view === 'cards', viewTable: view === 'table',
+            rankRows, pageRows, tableCols,
+            showPagination: (view === 'cards' || view === 'table') && cnt > 0,
+            pageInfo: cnt ? ('Mostrando ' + (page * pageSize + 1) + '–' + Math.min((page + 1) * pageSize, cnt) + ' de ' + cnt) : '',
+            pageLabel: 'Página ' + (page + 1) + ' de ' + totalPages,
+            prevStyle: this.pageBtn(page === 0), nextStyle: this.pageBtn(page >= totalPages - 1),
+            opLabel: s.operation === 'venta' ? 'Venta' : 'Alquiler',
+            marketRows, mapCells,
+            hasCompare: compareCols.length > 0, compareCols,
+            compareInfo: compareData.length + ' de 3 seleccionados',
+            // handlers
+            setOp: (e) => this.set({ operation: e.currentTarget.dataset.op, maxPrice: e.currentTarget.dataset.op === 'venta' ? 550000 : 1800, page: 0 }),
+            toggleZone: (e) => { const z = e.currentTarget.dataset.zone; this.set({ zones: s.zones.includes(z) ? s.zones.filter((x) => x !== z) : [...s.zones, z] }); },
+            toggleSource: (e) => { const v = e.currentTarget.dataset.src; this.set({ sources: s.sources.includes(v) ? s.sources.filter((x) => x !== v) : [...s.sources, v] }); },
+            setRooms: (e) => this.set({ minRooms: Number(e.currentTarget.dataset.r) }),
+            onArea: (e) => this.set({ minArea: Number(e.target.value) }),
+            onMaxPrice: (e) => this.set({ maxPrice: Number(e.target.value) }),
+            onQuery: (e) => this.set({ query: e.target.value }),
+            toggleExtra: (e) => { const f = e.currentTarget.dataset.flag; this.set({ [f]: !s[f] }); },
+            resetFilters: () => this.set({ operation: 'venta', zones: [], sources: [], minRooms: 2, minArea: 60, maxPrice: 550000, query: '', requireLift: false, requireExterior: false, onlyBelowMedian: false, onlyFavorites: false }),
+            setView: (e) => this.setState({ view: e.currentTarget.dataset.view }),
+            sortBy: (e) => { const k = e.currentTarget.dataset.key; this.setState((st) => ({ ...st, sortKey: k, sortDir: st.sortKey === k ? -st.sortDir : 1 })); },
+            prevPage: () => this.setState((st) => ({ ...st, page: Math.max(0, st.page - 1) })),
+            nextPage: () => this.setState((st) => ({ ...st, page: st.page + 1 })),
+            toggleFav: (e) => { const id = e.currentTarget.dataset.id; this.setState((st) => { const f = { ...st.favs }; if (f[id]) delete f[id]; else f[id] = true; return { ...st, favs: f }; }); },
+            toggleCompare: (e) => { const id = e.currentTarget.dataset.id; this.setState((st) => { let c = st.compares.includes(id) ? st.compares.filter((x) => x !== id) : (st.compares.length >= 3 ? st.compares : [...st.compares, id]); return { ...st, compares: c }; }); },
+            clearCompare: () => this.setState((st) => ({ ...st, compares: [] })),
+          };
+        }
+
+        tabStyle(on) {
+          const base = 'padding:10px 18px;font:800 13px/1 var(--font-heading);cursor:pointer;border:0;border-radius:0;';
+          return on ? base + 'background:var(--color-accent);color:var(--color-bg);' : base + 'background:transparent;color:var(--color-text);';
+        }
+        pageBtn(disabled) {
+          return 'background:transparent;border:1px solid var(--color-divider);color:var(--color-text);font:600 13px var(--font-heading);padding:8px 14px;border-radius:0;cursor:' + (disabled ? 'not-allowed' : 'pointer') + ';opacity:' + (disabled ? '.4' : '1') + ';';
+        }
+      }
+
+      const RAW = [
+        { id: '111467837', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Calle de Juan Álvarez Mendizábal', price: 520000, rooms: 2, area: 70, floor: '', source: 'idealista', url: 'https://www.idealista.com/inmueble/111467837/' },
+        { id: '109915328', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Calle de Altamirano, 20', price: 320000, rooms: 2, area: 63, floor: 'Bajo exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/109915328/' },
+        { id: '111809070', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Argüelles', price: 530000, rooms: 3, area: 79, floor: '2ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111809070/' },
+        { id: '111974976', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Calle de Romero Robledo, 11', price: 449000, rooms: 2, area: 60, floor: '6ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111974976/' },
+        { id: '112043202', zone: 'Argüelles', operation: 'venta', type: 'Dúplex', address: 'Calle de Benito Gutiérrez', price: 530000, rooms: 2, area: 75, floor: 'Bajo exterior sin ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/112043202/' },
+        { id: '111193222', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Calle de Benito Gutiérrez, 37', price: 450000, rooms: 2, area: 62, floor: '1ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111193222/' },
+        { id: '109837559', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Argüelles', price: 399000, rooms: 2, area: 97, floor: 'Bajo exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/109837559/' },
+        { id: '111821478', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Calle de Martín de los Heros', price: 420000, rooms: 2, area: 67, floor: '1ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111821478/' },
+        { id: '110288303', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Calle del Tutor', price: 435000, rooms: 3, area: 81, floor: 'Semi-sótano interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/110288303/' },
+        { id: '110667266', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Calle Arriaza', price: 389000, rooms: 3, area: 70, floor: 'Bajo interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/110667266/' },
+        { id: '187937183', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Moncloa - Aravaca', price: 320000, rooms: 2, area: 63, floor: 'Bajo con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/187937183/d' },
+        { id: '185482381', zone: 'Argüelles', operation: 'venta', type: 'Piso', address: 'Moncloa - Aravaca', price: 455000, rooms: 2, area: 64, floor: 'Bajo con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/185482381/d' },
+        { id: '32956591', zone: 'Argüelles', operation: 'alquiler', type: 'Ático', address: 'Calle Arcipreste de Hita, 7', price: 1700, rooms: 2, area: 106, floor: '7ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/32956591/' },
+        { id: '29226334', zone: 'Argüelles', operation: 'alquiler', type: 'Dúplex', address: 'Calle Martín de los Heros', price: 1750, rooms: 2, area: 70, floor: '4ª planta interior sin ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/29226334/' },
+        { id: '110340484', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle de Martín de los Heros', price: 1650, rooms: 2, area: 62, floor: '2ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/110340484/' },
+        { id: '110556581', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle de Ilustración', price: 1800, rooms: 3, area: 110, floor: '3ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/110556581/' },
+        { id: '112001424', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle de Martín de los Heros', price: 1600, rooms: 2, area: 67, floor: '1ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/112001424/' },
+        { id: '111985086', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle de Cadarso, 10', price: 1450, rooms: 2, area: 92, floor: '3ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111985086/' },
+        { id: '111595071', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle de Juan Álvarez Mendizábal', price: 1490, rooms: 2, area: 90, floor: '4ª planta exterior sin ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111595071/' },
+        { id: '111075617', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle de Juan Álvarez Mendizábal', price: 1150, rooms: 2, area: 60, floor: 'Bajo interior sin ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111075617/' },
+        { id: '111895370', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle del Rey Francisco, 28', price: 1400, rooms: 2, area: 70, floor: '2ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111895370/' },
+        { id: '111653387', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle de Ferraz', price: 1300, rooms: 2, area: 73, floor: '4ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111653387/' },
+        { id: '108791098', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Paseo del Pintor Rosales, 26', price: 1550, rooms: 2, area: 65, floor: '7ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/108791098/' },
+        { id: '87405803', zone: 'Argüelles', operation: 'alquiler', type: 'Piso', address: 'Calle del Tutor, 40', price: 1350, rooms: 2, area: 65, floor: 'Semi-sótano interior sin ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/87405803/' },
+        { id: '112013125', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Calle Linneo, 33', price: 535000, rooms: 2, area: 76, floor: '3ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/112013125/' },
+        { id: '111763040', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Imperial', price: 399000, rooms: 2, area: 71, floor: '7ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111763040/' },
+        { id: '111889897', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Calle de Juan Duque', price: 539900, rooms: 2, area: 74, floor: '4ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111889897/' },
+        { id: '111832919', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Paseo de la Virgen del Puerto', price: 499990, rooms: 4, area: 111, floor: 'Bajo exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111832919/' },
+        { id: '111809230', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Paseo de los Melancólicos', price: 435000, rooms: 3, area: 73, floor: '2ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111809230/' },
+        { id: '111717951', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Calle de Paradinas', price: 450000, rooms: 2, area: 79, floor: 'Bajo exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111717951/' },
+        { id: '111286908', zone: 'Imperial', operation: 'venta', type: 'Dúplex', address: 'Calle de Manzanares', price: 350000, rooms: 2, area: 93, floor: 'Bajo exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111286908/' },
+        { id: '110432967', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Calle de Santa Casilda, 10', price: 440000, rooms: 2, area: 66, floor: 'Bajo exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/110432967/' },
+        { id: '110443762', zone: 'Imperial', operation: 'venta', type: 'Piso', address: 'Paseo Imperial', price: 288900, rooms: 3, area: 131, floor: '', source: 'idealista', url: 'https://www.idealista.com/inmueble/110443762/' },
+        { id: '189924085', zone: 'Imperial', operation: 'alquiler', type: 'Piso', address: 'Calle de Mazarredo', price: 1690, rooms: 3, area: 112, floor: 'Bajo exterior con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/189924085/d' },
+        { id: '189600820', zone: 'Imperial', operation: 'alquiler', type: 'Piso', address: 'Calle de los Pontones', price: 1500, rooms: 2, area: 84, floor: '9ª planta exterior con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/189600820/d' },
+        { id: '189329421', zone: 'Imperial', operation: 'alquiler', type: 'Piso', address: 'Paseo de los Melancólicos', price: 1510, rooms: 2, area: 100, floor: '14ª planta exterior con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/189329421/d' },
+        { id: '183904500', zone: 'Imperial', operation: 'alquiler', type: 'Piso', address: 'Calle Santa Casilda', price: 1690, rooms: 3, area: 93, floor: '6ª planta exterior con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/183904500/d' },
+        { id: '111731167', zone: 'Almagro', operation: 'venta', type: 'Piso', address: 'Calle de Zurbano', price: 490000, rooms: 2, area: 70, floor: 'Bajo interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111731167/' },
+        { id: '111693455', zone: 'Almagro', operation: 'venta', type: 'Piso', address: 'Calle de Zurbano', price: 499000, rooms: 2, area: 80, floor: 'Bajo interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111693455/' },
+        { id: '91274746', zone: 'Almagro', operation: 'alquiler', type: 'Piso', address: 'Calle de García de Paredes', price: 1800, rooms: 3, area: 100, floor: 'Entreplanta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/91274746/' },
+        { id: '112012672', zone: 'Almagro', operation: 'alquiler', type: 'Piso', address: 'Calle de García de Paredes', price: 1800, rooms: 2, area: 90, floor: '6ª planta interior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/112012672/' },
+        { id: '111908582', zone: 'Almagro', operation: 'alquiler', type: 'Piso', address: 'Calle de Caracas, 6', price: 1800, rooms: 2, area: 74, floor: '5ª planta interior sin ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111908582/' },
+        { id: '111825332', zone: 'Almagro', operation: 'alquiler', type: 'Piso', address: 'Calle de Fernández de la Hoz, 37', price: 1800, rooms: 2, area: 85, floor: '3ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/111825332/' },
+        { id: '112062174', zone: 'Vallehermoso', operation: 'alquiler', type: 'Piso', address: 'Calle del Valle', price: 1750, rooms: 2, area: 94, floor: '1ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/112062174/' },
+        { id: '112041445', zone: 'Vallehermoso', operation: 'alquiler', type: 'Piso', address: 'Calle de Bravo Murillo', price: 1800, rooms: 2, area: 95, floor: '6ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/112041445/' },
+        { id: '102022493', zone: 'Vallehermoso', operation: 'alquiler', type: 'Piso', address: 'Calle del Maestro Ángel Llorca, 3', price: 1650, rooms: 2, area: 78, floor: '5ª planta exterior con ascensor', source: 'idealista', url: 'https://www.idealista.com/inmueble/102022493/' },
+        { id: '190130537', zone: 'Vallehermoso', operation: 'alquiler', type: 'Piso', address: 'Avenida del Valle, 13', price: 1750, rooms: 2, area: 72, floor: 'Bajo exterior con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/190130537/d' },
+        { id: '189155539', zone: 'Puerta del Ángel', operation: 'venta', type: 'Piso con terraza', address: 'Calle de los Apóstoles', price: 320000, rooms: 3, area: 75, floor: 'Planta con terraza y ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/189155539/d' },
+        { id: '185564741', zone: 'Puerta del Ángel', operation: 'venta', type: 'Piso', address: 'Calle de la Huerta de Castañeda', price: 220500, rooms: 3, area: 78, floor: 'Planta interior', source: 'fotocasa', url: 'https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/185564741/d' },
+        { id: '190264317', zone: 'Puerta del Ángel', operation: 'venta', type: 'Piso', address: 'Puerta del Ángel', price: 220000, rooms: 2, area: 60, floor: 'Planta con terraza', source: 'fotocasa', url: 'https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/190264317/d' },
+        { id: '190133719', zone: 'Casa de Campo', operation: 'venta', type: 'Ático', address: 'Casa de Campo · Madrid Río', price: 400000, rooms: 2, area: 66, floor: 'Ático exterior con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/190133719/d' },
+        { id: '189307082', zone: 'Casa de Campo', operation: 'venta', type: 'Piso', address: 'Casa de Campo', price: 490000, rooms: 2, area: 72, floor: '', source: 'fotocasa', url: 'https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/x/189307082/d' },
+        { id: '190257122', zone: 'Casa de Campo', operation: 'alquiler', type: 'Piso', address: 'Calle de la Florida', price: 1700, rooms: 2, area: 100, floor: 'Planta con ascensor', source: 'fotocasa', url: 'https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/x/190257122/d' },
+      ];
+    </script>
+  </body>
+</html>
