@@ -39,6 +39,9 @@ export function parseListingsPage(html: string, zone: string, operation: Operati
     const id = extractId(href);
     if (!id) continue;
 
+    // Descartar nuda propiedad
+    if (/nuda\s*propiedad|nuda-propiedad/i.test(article.text)) continue;
+
     const details = article.querySelectorAll('.item-detail').map((node) => node.text.trim());
     const rooms = toInt(details.find((d) => /hab/.test(d)));
     const area = toInt(details.find((d) => /m²/.test(d)));

@@ -32,6 +32,11 @@
       </button>
     </div>
 
+    <!-- Botón Añadir Inmueble -->
+    <button type="button" class="btn-add-listing" (click)="openAddModal()" title="Añadir un inmueble de Idealista o Fotocasa">
+      ➕ Añadir inmueble
+    </button>
+
     <!-- Exportar -->
     <div class="export-dropdown">
       <button type="button" class="btn-export" (click)="exportData('csv')" title="Exportar resultados a CSV">
@@ -477,4 +482,156 @@
       </div>
     </nav>
   }
+}
+
+<!-- MODAL AÑADIR INMUEBLE -->
+@if (showAddModal()) {
+  <div class="modal-backdrop" (click)="closeAddModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>➕ Añadir inmueble a la base de datos</h2>
+        <button type="button" class="btn-close" (click)="closeAddModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        @if (addModalError()) {
+          <div class="modal-alert">{{ addModalError() }}</div>
+        }
+
+        <div class="form-group">
+          <label for="newUrl">URL del anuncio (Idealista / Fotocasa)</label>
+          <input
+            id="newUrl"
+            type="url"
+            placeholder="https://www.idealista.com/inmueble/10123456/..."
+            [ngModel]="newListing().url"
+            (ngModelChange)="onUrlChange($event)"
+          />
+          <span class="form-help">Se auto-detectará el portal y el identificador a partir del enlace.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newSource">Portal</label>
+            <select
+              id="newSource"
+              [ngModel]="newListing().source"
+              (ngModelChange)="updateNewListing('source', $event)"
+            >
+              <option value="idealista">Idealista</option>
+              <option value="fotocasa">Fotocasa</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="newOp">Operación</label>
+            <select
+              id="newOp"
+              [ngModel]="newListing().operation"
+              (ngModelChange)="updateNewListing('operation', $event)"
+            >
+              <option value="venta">Venta</option>
+              <option value="alquiler">Alquiler</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newZone">Zona / Distrito *</label>
+            <select
+              id="newZone"
+              [ngModel]="newListing().zone"
+              (ngModelChange)="updateNewListing('zone', $event)"
+            >
+              @for (z of zones(); track z) {
+                <option [value]="z">{{ z }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="newType">Tipo de propiedad</label>
+            <input
+              id="newType"
+              type="text"
+              placeholder="Piso, Ático, Dúplex..."
+              [ngModel]="newListing().type"
+              (ngModelChange)="updateNewListing('type', $event)"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newAddress">Dirección o Titular *</label>
+          <input
+            id="newAddress"
+            type="text"
+            placeholder="Ej. Calle de San Bernardo"
+            [ngModel]="newListing().address"
+            (ngModelChange)="updateNewListing('address', $event)"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newPrice">Precio ({{ newListing().operation === 'venta' ? '€' : '€/mes' }}) *</label>
+            <input
+              id="newPrice"
+              type="number"
+              placeholder="350000"
+              [ngModel]="newListing().price"
+              (ngModelChange)="updateNewListing('price', asNumber($event))"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="newArea">Superficie (m²) *</label>
+            <input
+              id="newArea"
+              type="number"
+              placeholder="85"
+              [ngModel]="newListing().area"
+              (ngModelChange)="updateNewListing('area', asNumber($event))"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="newRooms">Habitaciones *</label>
+            <input
+              id="newRooms"
+              type="number"
+              placeholder="3"
+              [ngModel]="newListing().rooms"
+              (ngModelChange)="updateNewListing('rooms', asNumber($event))"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newFloor">Planta y características</label>
+          <input
+            id="newFloor"
+            type="text"
+            placeholder="Ej. Planta 3ª exterior con ascensor"
+            [ngModel]="newListing().floor"
+            (ngModelChange)="updateNewListing('floor', $event)"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeAddModal()" [disabled]="isSaving()">
+          Cancelar
+        </button>
+        <button type="button" class="btn-submit" (click)="submitNewListing()" [disabled]="isSaving()">
+          {{ isSaving() ? 'Guardando en Firebase…' : '💾 Guardar Inmueble' }}
+        </button>
+      </div>
+    </div>
+  </div>
 }

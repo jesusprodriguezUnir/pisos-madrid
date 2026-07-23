@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import {
   PRICE_CEILING,
   PRICE_STEP,
+  type Listing,
   type ListingFilters,
   type Operation,
   type SortKey,
@@ -32,6 +33,19 @@ const DEFAULT_FILTERS: ListingFilters = {
   hideDismissed: false,
 };
 
+const DEFAULT_NEW_LISTING = {
+  url: '',
+  source: 'idealista' as Source,
+  zone: 'Argüelles',
+  operation: 'venta' as Operation,
+  type: 'Piso',
+  address: '',
+  price: null as number | null,
+  rooms: 2 as number | null,
+  area: 75 as number | null,
+  floor: 'Planta 3ª exterior con ascensor',
+};
+
 @Component({
   selector: 'app-listings-page',
   imports: [FormsModule, DecimalPipe, DatePipe],
@@ -57,6 +71,12 @@ export class ListingsPage {
   protected readonly filters = signal<ListingFilters>(this.loadFiltersFromUrl());
   protected readonly sort = signal<SortState>({ key: 'pricePerM2', direction: 1 });
   protected readonly viewMode = signal<ViewMode>('cards');
+
+  // Estado del Modal de Añadir Inmueble
+  protected readonly showAddModal = signal<boolean>(false);
+  protected readonly isSaving = signal<boolean>(false);
+  protected readonly addModalError = signal<string | null>(null);
+  protected readonly newListing = signal({ ...DEFAULT_NEW_LISTING });
 
   // Paginación
   protected readonly pageSize = signal<number>(24);
@@ -278,6 +298,84 @@ export class ListingsPage {
       window.history.replaceState(null, '', newUrl);
     } catch {
       // Ignore
+    }
+  }
+
+  protected openAddModal(): void {
+    const activeZone = this.filters().zones[0] || this.zones()[0] || 'Argüelles';
+    this.newListing.set({
+      ...DEFAULT_NEW_LISTING,
+      zone: activeZone,
+      operation: this.filters().operation,
+    });
+    this.addModalError.set(null);
+    this.showAddModal.set(true);
+  }
+
+  protected closeAddModal(): void {
+    this.showAddModal.set(false);
+    this.addModalError.set(null);
+  }
+
+  protected onUrlChange(url: string): void {
+    this.newListing.update((form) => {
+      let source = form.source;
+      if (url.includes('fotocasa.es')) {
+        source = 'fotocasa';
+      } else if (url.includes('idealista.com')) {
+        source = 'idealista';
+      }
+      return { ...form, url, source };
+    });
+  }
+
+  protected updateNewListing<K extends keyof typeof DEFAULT_NEW_LISTING>(
+    key: K,
+    value: (typeof DEFAULT_NEW_LISTING)[K],
+  ): void {
+    this.newListing.update((form) => ({ ...form, [key]: value }));
+  }
+
+  protected async submitNewListing(): Promise<void> {
+    const form = this.newListing();
+    if (!form.address.trim() || !form.price || !form.area || !form.rooms) {
+      this.addModalError.set('Por favor, completa los campos obligatorios: dirección, precio, m² y habitaciones.');
+      return;
+    }
+
+    this.isSaving.set(true);
+    this.addModalError.set(null);
+
+    try {
+      let id = '';
+      if (form.url) {
+        const idMatch = /\/(\d{6,12})/.exec(form.url);
+        if (idMatch) id = idMatch[1];
+      }
+      if (!id) {
+        id = `manual_${Date.now()}`;
+      }
+
+      const listing: Listing = {
+        id,
+        zone: form.zone,
+        operation: form.operation,
+        type: form.type || 'Piso',
+        address: form.address.trim(),
+        price: Number(form.price),
+        rooms: Number(form.rooms),
+        area: Number(form.area),
+        floor: form.floor.trim(),
+        url: form.url.trim() || `https://www.idealista.com/inmueble/${id}/`,
+        source: form.source,
+      };
+
+      await this.service.addListing(listing);
+      this.closeAddModal();
+    } catch (err: unknown) {
+      this.addModalError.set(err instanceof Error ? err.message : 'Error al guardar el inmueble en la base de datos');
+    } finally {
+      this.isSaving.set(false);
     }
   }
 }

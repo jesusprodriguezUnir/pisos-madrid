@@ -48,6 +48,9 @@ export function parseFotocasaCards(
     const id = extractFotocasaId(card.href);
     if (!id || seen.has(id)) continue;
 
+    // Descartar nuda propiedad
+    if (/nuda\s*propiedad|nuda-propiedad/i.test(card.text) || /nuda\s*propiedad|nuda-propiedad/i.test(card.title)) continue;
+
     const rooms = toInt(ROOMS_RE.exec(card.text)?.[1]);
     const area = toInt(AREA_RE.exec(card.text)?.[1]);
     const priceMatch = PRICE_RE.exec(card.text);

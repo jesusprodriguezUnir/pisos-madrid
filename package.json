@@ -12,7 +12,10 @@
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "scrape": "tsx scripts/scrape/index.ts"
+    "scrape": "tsx scripts/scrape/index.ts",
+    "seed:firebase": "tsx scripts/scrape/seed-firebase.ts",
+    "clean:nuda": "tsx scripts/scrape/clean-nuda-propiedad.ts",
+    "add:url": "tsx scripts/scrape/add-url.ts"
   },
   "private": true,
   "packageManager": "npm@10.9.8",
@@ -22,6 +25,7 @@
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
+    "firebase": "^11.2.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -34,6 +38,7 @@
     "angular-eslint": "^22.1.0",
     "eslint": "^10.7.0",
     "eslint-config-prettier": "^10.1.8",
+    "firebase-admin": "^13.0.1",
     "node-html-parser": "^9.0.0",
     "playwright": "^1.49.0",
     "prettier": "^3.8.1",

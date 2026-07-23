@@ -4,6 +4,7 @@ import { CRITERIA, OPERATIONS, OUTPUT_DIR, OUTPUT_INDEX_PATH, ZONES, buildIdeali
 import { parseListingsPage } from './parser';
 import { scrapeFotocasaZone, withFotocasaBrowser } from './fotocasa';
 import { computeListingDiff, formatDiffReport, type ListingDiff } from './listing-diff';
+import { syncListingsToFirebase } from './firebase-sync';
 
 async function readPreviousListings(slug: string): Promise<Listing[]> {
   try {
@@ -91,6 +92,7 @@ async function main(): Promise<void> {
 
   let zonesWritten = 0;
   const diffsByZone = new Map<string, ListingDiff>();
+  const allListings: Listing[] = [];
 
   await withFotocasaBrowser(async (browser) => {
     for (const zone of ZONES) {
@@ -119,6 +121,7 @@ async function main(): Promise<void> {
         continue;
       }
 
+      allListings.push(...listings);
       const previousListings = await readPreviousListings(zone.slug);
       diffsByZone.set(zone.name, computeListingDiff(previousListings, listings));
 
@@ -141,6 +144,9 @@ async function main(): Promise<void> {
         'scripts/scrape/parser.ts y scripts/scrape/fotocasa-parser.ts antes de asumir que no hay oferta.',
     );
   }
+
+  // Sincronizar con Firebase manteniendo los JSON como respaldo
+  await syncListingsToFirebase(allListings);
 
   // El índice se reescribe siempre a partir de ZONES, incluso si algún distrito
   // no tuvo anuncios nuevos esta vez: la app necesita saber qué ficheros existen.
