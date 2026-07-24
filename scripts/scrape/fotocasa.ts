@@ -84,10 +84,16 @@ async function extractCards(browser: Browser, url: string): Promise<RawFotocasaC
             break;
           }
         }
+        const img = container.querySelector('img');
+        let imageUrl = img?.getAttribute('src') || img?.getAttribute('data-src') || undefined;
+        if (imageUrl && imageUrl.startsWith('data:')) imageUrl = undefined;
+        if (imageUrl && imageUrl.startsWith('//')) imageUrl = `https:${imageUrl}`;
+
         return {
           href: a.getAttribute('href') ?? '',
           text: container.textContent ?? '',
           title: a.textContent?.trim() ?? '',
+          imageUrl,
         };
       }),
     );

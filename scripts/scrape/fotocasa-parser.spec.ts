@@ -88,4 +88,13 @@ describe('parseFotocasaCards', () => {
     const duplicated = [card(), card()];
     expect(parseFotocasaCards(duplicated, 'Argüelles', 'venta')).toHaveLength(1);
   });
+
+  it('incluye imageUrl si la tarjeta cruda la contiene', () => {
+    const cardWithImg = card({
+      href: '/es/comprar/vivienda/madrid-capital/arguelles/157057499/d',
+      imageUrl: 'https://fotocasa.es/img.jpg',
+    });
+    const [listing] = parseFotocasaCards([cardWithImg], 'Argüelles', 'venta');
+    expect(listing.imageUrl).toBe('https://fotocasa.es/img.jpg');
+  });
 });

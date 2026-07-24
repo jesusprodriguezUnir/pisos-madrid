@@ -25,4 +25,5 @@ Usa esta skill cuando el usuario proporcione un enlace/URL de un anuncio de **Id
    - **Zona / Barrio**
    - **Precio** y **€/m²**
    - **Habitaciones y Superficie**
+   - **Imagen de portada**: Muestra la imagen extraída con la sintaxis `![Portada](URL_DE_LA_IMAGEN)` si fue detectada correctamente.
    - Confirmación de guardado en Firebase Firestore.

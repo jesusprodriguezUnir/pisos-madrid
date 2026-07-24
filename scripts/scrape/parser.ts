@@ -53,6 +53,14 @@ export function parseListingsPage(html: string, zone: string, operation: Operati
 
     const { type, address } = splitTitle(link.text.trim());
 
+    const imgNode = article.querySelector('.item-multimedia img, .item-gallery img, picture img, img');
+    let rawImg =
+      imgNode?.getAttribute('data-ondemand-img') ||
+      imgNode?.getAttribute('data-src') ||
+      imgNode?.getAttribute('src');
+    if (rawImg && rawImg.startsWith('data:')) rawImg = undefined;
+    if (rawImg && rawImg.startsWith('//')) rawImg = `https:${rawImg}`;
+
     listings.push({
       id,
       zone,
@@ -65,6 +73,7 @@ export function parseListingsPage(html: string, zone: string, operation: Operati
       floor,
       url: `${BASE_URL}${href}`,
       source: 'idealista',
+      ...(rawImg ? { imageUrl: rawImg } : {}),
     });
   }
 

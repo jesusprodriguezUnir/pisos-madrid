@@ -360,8 +360,12 @@
       <section class="cards-grid">
         @for (row of paginatedRows(); track row.id) {
           <article class="lc" [class.is-dismissed]="favoritesService.isDismissed(row.id)">
-            <div class="card-photo grayscale">
-              <span class="card-photo-label">Foto no disponible</span>
+            <div class="card-photo" [class.grayscale]="!row.imageUrl">
+              @if (row.imageUrl) {
+                <img [src]="row.imageUrl" [alt]="row.address" loading="lazy" (error)="onImageError($event)" class="card-img" />
+              } @else {
+                <span class="card-photo-label">Foto no disponible</span>
+              }
               @if (row.deltaVsZone <= -10) {
                 <span class="card-bargain">★ Chollo</span>
               }

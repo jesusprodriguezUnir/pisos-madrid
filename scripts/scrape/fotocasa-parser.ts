@@ -15,6 +15,8 @@ export interface RawFotocasaCard {
   readonly text: string;
   /** Texto del propio enlace/título: "Piso en Calle de Alberto Aguilera, Argüelles". */
   readonly title: string;
+  /** URL opcional de la imagen principal. */
+  readonly imageUrl?: string;
 }
 
 const ID_RE = /\/(\d{6,12})(?:\/d)?(?:\?.*)?$/;
@@ -77,6 +79,7 @@ export function parseFotocasaCards(
       floor,
       url: card.href.startsWith('http') ? card.href : `https://www.fotocasa.es${card.href}`,
       source: 'fotocasa',
+      ...(card.imageUrl ? { imageUrl: card.imageUrl } : {}),
     });
   }
 

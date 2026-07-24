@@ -1,7 +1,7 @@
 {
  "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-07-23T16:02:22.615Z",
- "total": 3,
+ "scrapedAt": "2026-07-24T04:59:47.176Z",
+ "total": 2,
  "listings": [
   {
    "id": "190264317",
@@ -12,9 +12,10 @@
    "price": 220000,
    "rooms": 2,
    "area": 60,
-   "floor": "Planta·TerrazaHace 5 díasTop+Más detalles***SIN COMISIONES DE AGENCIA INMOBILIARIA***",
+   "floor": "Planta·TerrazaHace 6 díasTop+Más detalles***SIN COMISIONES DE AGENCIA INMOBILIARIA***",
    "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/terraza-no-amueblado/190264317/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
-   "source": "fotocasa"
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/ads/b06b4939-c1db-41f8-b092-4172367c696c?rule=original"
   },
   {
    "id": "189155539",
@@ -27,20 +28,8 @@
    "area": 75,
    "floor": "planta",
    "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/aire-acondicionado-calefaccion-terraza-ascensor-amueblado/189155539/d",
-   "source": "fotocasa"
-  },
-  {
-   "id": "185564741",
-   "zone": "Puerta del Ángel",
-   "operation": "venta",
-   "type": "Piso con 1 baño",
-   "address": "Piso con 1 baño en De La Huerta De Castañeda, Puerta del Ángel",
-   "price": 220500,
-   "rooms": 3,
-   "area": 78,
-   "floor": "PlantaHOGALIA CITYMás de 3 meses",
-   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/no-amueblado/185564741/d",
-   "source": "fotocasa"
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/client/9202762554211/670333.jpg?rule=web_77x40"
   }
  ]
 }

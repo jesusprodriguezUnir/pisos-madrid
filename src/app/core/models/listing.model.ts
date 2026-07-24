@@ -25,6 +25,8 @@ export interface Listing {
   readonly url: string;
   /** Portal de origen. Opcional por compatibilidad con datasets anteriores a la integración de Fotocasa. */
   readonly source?: Source;
+  /** URL de la imagen principal o portada del inmueble. */
+  readonly imageUrl?: string;
 }
 
 /** Listing + métricas derivadas. Se calcula en cliente, nunca se persiste. */

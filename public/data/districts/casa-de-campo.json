@@ -1,8 +1,22 @@
 {
  "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-07-23T16:01:58.849Z",
- "total": 3,
+ "scrapedAt": "2026-07-24T04:59:16.095Z",
+ "total": 5,
  "listings": [
+  {
+   "id": "111949613",
+   "zone": "Casa de Campo",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Paseo del Comandante Fortea, Casa de Campo",
+   "price": 450000,
+   "rooms": 2,
+   "area": 86,
+   "floor": "3ª planta exterior con ascensor",
+   "url": "https://www.idealista.com/inmueble/111949613/",
+   "source": "idealista",
+   "imageUrl": "https://img4.idealista.com/blur/WEB_DETAIL/0/id.pro.es.image.master/e5/9b/15/1454255403.jpg"
+  },
   {
    "id": "190133719",
    "zone": "Casa de Campo",
@@ -14,7 +28,8 @@
    "area": 66,
    "floor": "ático Madrid Río y la icónica Casa de Campo",
    "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/calefaccion-jardin-ascensor-no-amueblado/190133719/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
-   "source": "fotocasa"
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/ads/d7b0a6e4-0887-41f3-906d-9004d3720687?rule=original"
   },
   {
    "id": "189307082",
@@ -40,7 +55,22 @@
    "area": 100,
    "floor": "PlantaValtierHace 6 días",
    "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/aire-acondicionado-parking-ascensor-no-amueblado/190257122/d",
-   "source": "fotocasa"
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/client/55bf6178-28f9-4d38-92e5-50a29c426972/20260310123605?rule=web_77x40"
+  },
+  {
+   "id": "190148561",
+   "zone": "Casa de Campo",
+   "operation": "alquiler",
+   "type": "Piso con calefacción",
+   "address": "Piso con calefacción en N/A, Puerta del Ángel",
+   "price": 1750,
+   "rooms": 3,
+   "area": 70,
+   "floor": "",
+   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/aire-acondicionado-calefaccion-amueblado-television/190148561/d",
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/client/a36e9845-b42a-487a-a3e3-487b5796bc5d/20250206153520?rule=web_77x40"
   }
  ]
 }

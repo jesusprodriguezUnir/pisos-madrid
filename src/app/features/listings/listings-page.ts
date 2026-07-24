@@ -76,6 +76,7 @@ const DEFAULT_NEW_LISTING = {
   rooms: 2 as number | null,
   area: 75 as number | null,
   floor: 'Planta 3ª exterior con ascensor',
+  imageUrl: '',
 };
 
 @Component({
@@ -515,6 +516,7 @@ export class ListingsPage {
         floor: form.floor.trim(),
         url: form.url.trim() || `https://www.idealista.com/inmueble/${id}/`,
         source: form.source,
+        ...(form.imageUrl.trim() ? { imageUrl: form.imageUrl.trim() } : {}),
       };
 
       await this.service.addListing(listing);
@@ -525,6 +527,21 @@ export class ListingsPage {
       );
     } finally {
       this.isSaving.set(false);
+    }
+  }
+
+  protected onImageError(event: Event): void {
+    const imgEl = event.target as HTMLImageElement;
+    if (imgEl) {
+      imgEl.style.display = 'none';
+      const parent = imgEl.parentElement;
+      if (parent && !parent.querySelector('.card-photo-label')) {
+        const span = document.createElement('span');
+        span.className = 'card-photo-label';
+        span.textContent = 'Foto no disponible';
+        parent.appendChild(span);
+        parent.classList.add('grayscale');
+      }
     }
   }
 }

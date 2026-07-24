@@ -574,9 +574,26 @@ input[type='number'] {
   display: flex;
   align-items: flex-end;
   padding: 10px;
+  overflow: hidden;
+}
+
+.card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.lc:hover .card-img {
+  transform: scale(1.04);
 }
 
 .card-photo-label {
+  position: relative;
+  z-index: 1;
   font: 600 10px/1 var(--font-heading);
   letter-spacing: 0.08em;
   text-transform: uppercase;

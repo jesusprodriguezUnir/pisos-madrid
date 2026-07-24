@@ -124,6 +124,21 @@ describe('parseListingsPage', () => {
       [],
     );
   });
+
+  it('extrae imageUrl si el artículo contiene una imagen', () => {
+    const htmlWithImg = `
+      <article class="item">
+        <a class="item-link" href="/inmueble/112009759/">Piso en Calle de Maudes, Madrid</a>
+        <span class="item-price">400.000€</span>
+        <div class="item-detail-char">
+          <span class="item-detail">2 hab.</span>
+          <span class="item-detail">70 m²</span>
+        </div>
+        <img data-ondemand-img="https://img3.idealista.com/blur/WEB_DETAIL/0/id.jpg" />
+      </article>`;
+    const [listing] = parseListingsPage(htmlWithImg, 'Chamberí', 'venta');
+    expect(listing.imageUrl).toBe('https://img3.idealista.com/blur/WEB_DETAIL/0/id.jpg');
+  });
 });
 
 describe('buildIdealistaUrl', () => {

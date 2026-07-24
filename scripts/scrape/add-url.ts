@@ -56,10 +56,20 @@ export async function addListingFromUrl(inputUrl: string, customParams: Partial<
   let operation: Operation = customParams.operation || (url.includes('alquiler') ? 'alquiler' : 'venta');
   let zone = customParams.zone || matchZone(url);
 
+  let imageUrl = customParams.imageUrl;
+
   if (html) {
     const root = parse(html);
     const titleText = root.querySelector('h1, title')?.text?.trim() ?? '';
     const fullText = root.text;
+
+    if (!imageUrl) {
+      const ogImg = root.querySelector('meta[property="og:image"], meta[name="og:image"]')?.getAttribute('content');
+      const firstImg = root.querySelector('.main-image img, .multimedia img, picture img, img')?.getAttribute('src');
+      let found = ogImg || firstImg;
+      if (found && found.startsWith('//')) found = `https:${found}`;
+      if (found && !found.startsWith('data:')) imageUrl = found;
+    }
 
     if (titleText) {
       const parsed = splitTitle(titleText);
@@ -112,6 +122,7 @@ export async function addListingFromUrl(inputUrl: string, customParams: Partial<
     floor,
     url,
     source,
+    ...(imageUrl ? { imageUrl } : {}),
   };
 
   // Guardar en Firestore
@@ -124,8 +135,41 @@ export async function addListingFromUrl(inputUrl: string, customParams: Partial<
     const scrapedAt = new Date().toISOString();
     await db.collection('listings').doc(listing.id).set({ ...listing, scrapedAt }, { merge: true });
     console.log(`✅ Inmueble [${listing.id}] guardado en Firestore: ${listing.address} (${listing.price.toLocaleString('es-ES')} €)`);
+    if (listing.imageUrl) {
+      console.log(`  🖼️ Imagen de portada extraída: ${listing.imageUrl}`);
+    } else {
+      console.log('  ⚠ No se detectó imagen de portada para este enlace.');
+    }
   } else {
     console.warn('⚠ serviceAccountKey.json no encontrado. Se omitió la escritura en Firestore.');
+  }
+
+  // Guardar también en el fichero JSON local del distrito correspondiente
+  const matchedZone = ZONES.find(
+    (z) => z.name.toLowerCase() === listing.zone.toLowerCase() || z.slug === listing.zone.toLowerCase(),
+  );
+  const slug = matchedZone?.slug || listing.zone.toLowerCase().replace(/\s+/g, '-');
+  const localJsonPath = `./public/data/districts/${slug}.json`;
+
+  if (existsSync(localJsonPath)) {
+    try {
+      const content = await readFile(localJsonPath, 'utf-8');
+      const dataset = JSON.parse(content);
+      const idx = dataset.listings.findIndex((l: Listing) => l.id === listing.id);
+      const updatedListings = [...dataset.listings];
+      if (idx >= 0) {
+        updatedListings[idx] = listing;
+      } else {
+        updatedListings.unshift(listing);
+      }
+      dataset.listings = updatedListings;
+      dataset.total = updatedListings.length;
+      const { writeFile } = await import('node:fs/promises');
+      await writeFile(localJsonPath, JSON.stringify(dataset, null, 2), 'utf-8');
+      console.log(`📁 Fichero local '${localJsonPath}' actualizado.`);
+    } catch {
+      console.warn(`⚠ No se pudo actualizar el archivo local ${localJsonPath}`);
+    }
   }
 
   return listing;
