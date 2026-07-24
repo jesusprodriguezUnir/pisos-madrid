@@ -2,6 +2,7 @@ import { parse } from 'node-html-parser';
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import type { Listing, Operation, Source } from '../../src/app/core/models/listing.model';
 import { ZONES } from './config';
 import { toInt, splitTitle } from './parser';

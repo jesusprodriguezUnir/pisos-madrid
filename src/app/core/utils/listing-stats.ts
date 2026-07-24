@@ -8,9 +8,43 @@ export function median(values: readonly number[]): number {
   return sorted.length % 2 === 1 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
-const LIFT_RE = /con ascensor/i;
-const EXTERIOR_RE = /exterior/i;
+const NO_LIFT_RE = /sin\s*ascensor/i;
+const LIFT_RE = /ascensor/i;
+
+const NO_EXTERIOR_RE = /\binterior\b/i;
+const EXTERIOR_RE = /\bexterior\b/i;
+
+const NO_TERRACE_RE = /sin\s*terraza/i;
+const TERRACE_RE = /terraza|balc[oó]n/i;
+
+const NO_POOL_RE = /sin\s*piscina/i;
+const POOL_RE = /piscina/i;
+
 const NUDA_PROPIEDAD_RE = /nuda\s*propiedad|nuda-propiedad|nudapropiedad/i;
+
+export function detectLift(listing: Listing): boolean {
+  const fullText = `${listing.floor} ${listing.address} ${listing.type} ${listing.url}`;
+  if (NO_LIFT_RE.test(fullText)) return false;
+  return LIFT_RE.test(fullText);
+}
+
+export function detectExterior(listing: Listing): boolean {
+  const fullText = `${listing.floor} ${listing.address} ${listing.type} ${listing.url}`;
+  if (NO_EXTERIOR_RE.test(listing.floor) && !EXTERIOR_RE.test(listing.floor)) return false;
+  return EXTERIOR_RE.test(fullText);
+}
+
+export function detectTerrace(listing: Listing): boolean {
+  const fullText = `${listing.floor} ${listing.address} ${listing.type} ${listing.url}`;
+  if (NO_TERRACE_RE.test(fullText)) return false;
+  return TERRACE_RE.test(fullText);
+}
+
+export function detectPool(listing: Listing): boolean {
+  const fullText = `${listing.floor} ${listing.address} ${listing.type} ${listing.url}`;
+  if (NO_POOL_RE.test(fullText)) return false;
+  return POOL_RE.test(fullText);
+}
 
 export function isNudaPropiedad(listing: Listing): boolean {
   return (
@@ -53,8 +87,10 @@ export function enrich(rawListings: readonly Listing[]): EnrichedListing[] {
       pricePerM2,
       zoneMedian,
       deltaVsZone: zoneMedian > 0 ? (pricePerM2 / zoneMedian - 1) * 100 : 0,
-      hasLift: LIFT_RE.test(listing.floor),
-      isExterior: EXTERIOR_RE.test(listing.floor),
+      hasLift: detectLift(listing),
+      isExterior: detectExterior(listing),
+      hasTerrace: detectTerrace(listing),
+      hasPool: detectPool(listing),
     };
   });
 }
@@ -86,6 +122,8 @@ export function applyFilters(
     if (filters.maxPrice > 0 && listing.price > filters.maxPrice) return false;
     if (filters.requireLift && !listing.hasLift) return false;
     if (filters.requireExterior && !listing.isExterior) return false;
+    if (filters.requireTerrace && !listing.hasTerrace) return false;
+    if (filters.requirePool && !listing.hasPool) return false;
     if (filters.onlyBelowMedian && listing.deltaVsZone >= 0) return false;
     if (filters.onlyFavorites && !favoritesSet.has(listing.id)) return false;
     if (filters.hideDismissed && dismissedSet.has(listing.id)) return false;
@@ -151,6 +189,8 @@ export function exportToCsv(listings: readonly EnrichedListing[]): string {
     'vs. Zona (%)',
     'Ascensor',
     'Exterior',
+    'Terraza',
+    'Piscina',
     'Planta',
     'Fuente',
     'URL',
@@ -176,6 +216,8 @@ export function exportToCsv(listings: readonly EnrichedListing[]): string {
     escapeCsv(l.deltaVsZone.toFixed(1)),
     escapeCsv(l.hasLift ? 'Sí' : 'No'),
     escapeCsv(l.isExterior ? 'Sí' : 'No'),
+    escapeCsv(l.hasTerrace ? 'Sí' : 'No'),
+    escapeCsv(l.hasPool ? 'Sí' : 'No'),
     escapeCsv(l.floor),
     escapeCsv(l.source ?? 'idealista'),
     escapeCsv(l.url),

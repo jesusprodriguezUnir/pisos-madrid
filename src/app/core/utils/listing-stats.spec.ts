@@ -30,6 +30,8 @@ const baseFilters: ListingFilters = {
   types: [],
   requireLift: false,
   requireExterior: false,
+  requireTerrace: false,
+  requirePool: false,
   onlyBelowMedian: false,
   onlyFavorites: false,
   hideDismissed: false,
@@ -106,13 +108,53 @@ describe('enrich', () => {
     expect(withLift).toMatchObject({ hasLift: true, isExterior: true });
     expect(withoutLift).toMatchObject({ hasLift: false, isExterior: false });
   });
+
+  it('deriva terraza y piscina desde planta, tipo, dirección y URL', () => {
+    const [poolAndTerrace, plain] = enrich([
+      listing({
+        id: '1',
+        type: 'Piso con terraza',
+        floor: 'con piscina y ascensor',
+        url: 'https://www.fotocasa.es/.../terraza-ascensor-piscina/...',
+      }),
+      listing({ id: '2', floor: '2ª planta interior sin ascensor', type: 'Piso' }),
+    ]);
+
+    expect(poolAndTerrace).toMatchObject({
+      hasLift: true,
+      hasTerrace: true,
+      hasPool: true,
+      isExterior: false,
+    });
+
+    expect(plain).toMatchObject({
+      hasLift: false,
+      hasTerrace: false,
+      hasPool: false,
+      isExterior: false,
+    });
+  });
+
+  it('descarta ascensor, terraza y piscina ante frases explícitas de negación', () => {
+    const [negated] = enrich([
+      listing({
+        id: 'neg',
+        floor: '3ª planta sin ascensor',
+        address: 'Piso sin terraza y sin piscina en Chamberí',
+      }),
+    ]);
+
+    expect(negated.hasLift).toBe(false);
+    expect(negated.hasTerrace).toBe(false);
+    expect(negated.hasPool).toBe(false);
+  });
 });
 
 describe('applyFilters', () => {
   const data: EnrichedListing[] = enrich([
-    listing({ id: 'a', zone: 'Chamberí', price: 500_000, area: 90, rooms: 3, source: 'idealista', type: 'Piso' }),
-    listing({ id: 'b', zone: 'Embajadores', price: 300_000, area: 65, rooms: 2, source: 'fotocasa', type: 'Ático' }),
-    listing({ id: 'c', zone: 'Embajadores', price: 540_000, area: 62, rooms: 2, source: 'idealista', type: 'Piso' }),
+    listing({ id: 'a', zone: 'Chamberí', price: 500_000, area: 90, rooms: 3, source: 'idealista', type: 'Piso', floor: '3ª planta exterior con ascensor' }),
+    listing({ id: 'b', zone: 'Embajadores', price: 300_000, area: 65, rooms: 2, source: 'fotocasa', type: 'Ático con terraza', floor: '4ª planta sin ascensor' }),
+    listing({ id: 'c', zone: 'Embajadores', price: 540_000, area: 62, rooms: 2, source: 'idealista', type: 'Piso', floor: 'con piscina y ascensor' }),
     listing({ id: 'r', zone: 'Chamberí', operation: 'alquiler', price: 1_500, area: 70 }),
   ]);
 
@@ -134,6 +176,15 @@ describe('applyFilters', () => {
   it('filtra por fuentes de origen', () => {
     const result = applyFilters(data, { ...baseFilters, sources: ['fotocasa'] });
     expect(result.map((l) => l.id)).toEqual(['b']);
+  });
+
+  it('filtra por ascensor, terraza y piscina', () => {
+    expect(applyFilters(data, { ...baseFilters, requireLift: true }).map((l) => l.id)).toEqual(['a', 'c']);
+    expect(applyFilters(data, { ...baseFilters, requireTerrace: true }).map((l) => l.id)).toEqual(['b']);
+    expect(applyFilters(data, { ...baseFilters, requirePool: true }).map((l) => l.id)).toEqual(['c']);
+    expect(
+      applyFilters(data, { ...baseFilters, requireLift: true, requirePool: true }).map((l) => l.id),
+    ).toEqual(['c']);
   });
 
   it('filtra por tipo de inmueble', () => {

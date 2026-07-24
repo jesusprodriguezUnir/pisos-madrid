@@ -81,6 +81,18 @@ describe('parseListingsPage', () => {
     });
   });
 
+  it('preserva tags de detalles como ascensor, terraza y piscina en el campo floor', () => {
+    const multiDetailArticle = article({
+      href: '/inmueble/99999/',
+      title: 'Piso en Calle de Alberto Aguilera, Madrid',
+      price: '500.000€',
+      details: ['3 hab.', '90 m²', 'Planta 3ª exterior', 'con ascensor', 'con terraza', 'piscina'],
+    });
+
+    const [listing] = parseListingsPage(multiDetailArticle, 'Chamberí', 'venta');
+    expect(listing.floor).toBe('Planta 3ª exterior con ascensor con terraza piscina');
+  });
+
   it('descarta anuncios por debajo de los mínimos de habitaciones o superficie', () => {
     const small = article({
       href: '/inmueble/1/',

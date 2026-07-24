@@ -29,6 +29,7 @@ import {
   sortListings,
   summarize,
 } from '../../core/utils/listing-stats';
+import { buildListingFromForm } from '../../core/utils/listing-form';
 
 export interface MarketZoneStat {
   readonly zone: string;
@@ -60,6 +61,8 @@ const DEFAULT_FILTERS: ListingFilters = {
   types: [],
   requireLift: false,
   requireExterior: false,
+  requireTerrace: false,
+  requirePool: false,
   onlyBelowMedian: false,
   onlyFavorites: false,
   hideDismissed: false,
@@ -109,6 +112,8 @@ export class ListingsPage {
   protected readonly isSaving = signal<boolean>(false);
   protected readonly addModalError = signal<string | null>(null);
   protected readonly newListing = signal({ ...DEFAULT_NEW_LISTING });
+  protected readonly editingListingId = signal<string | null>(null);
+  protected readonly imagePreviewUrl = signal<string>('');
 
   // Paginación
   protected readonly pageSize = signal<number>(24);
@@ -224,6 +229,8 @@ export class ListingsPage {
     if (f.query.trim()) count++;
     if (f.requireLift) count++;
     if (f.requireExterior) count++;
+    if (f.requireTerrace) count++;
+    if (f.requirePool) count++;
     if (f.onlyBelowMedian) count++;
     if (f.onlyFavorites) count++;
     if (f.hideDismissed) count++;
@@ -276,7 +283,14 @@ export class ListingsPage {
   }
 
   protected toggleFlag(
-    key: 'requireLift' | 'requireExterior' | 'onlyBelowMedian' | 'onlyFavorites' | 'hideDismissed',
+    key:
+      | 'requireLift'
+      | 'requireExterior'
+      | 'requireTerrace'
+      | 'requirePool'
+      | 'onlyBelowMedian'
+      | 'onlyFavorites'
+      | 'hideDismissed',
   ): void {
     this.filters.update((f) => ({ ...f, [key]: !f[key] }));
   }
@@ -366,10 +380,18 @@ export class ListingsPage {
     return this.compareIds().includes(id);
   }
 
-  protected compareExtras(listing: { hasLift: boolean; isExterior: boolean }): string {
-    const extras = [listing.hasLift ? 'Ascensor' : '', listing.isExterior ? 'Exterior' : ''].filter(
-      (extra) => extra !== '',
-    );
+  protected compareExtras(listing: {
+    hasLift: boolean;
+    isExterior: boolean;
+    hasTerrace?: boolean;
+    hasPool?: boolean;
+  }): string {
+    const extras = [
+      listing.hasLift ? 'Ascensor' : '',
+      listing.isExterior ? 'Exterior' : '',
+      listing.hasTerrace ? 'Terraza' : '',
+      listing.hasPool ? 'Piscina' : '',
+    ].filter((extra) => extra !== '');
     return extras.length > 0 ? extras.join(', ') : '—';
   }
 
@@ -394,6 +416,8 @@ export class ListingsPage {
       const types = params.get('types') ? params.get('types')!.split(',') : [];
       const requireLift = params.get('requireLift') === 'true';
       const requireExterior = params.get('requireExterior') === 'true';
+      const requireTerrace = params.get('requireTerrace') === 'true';
+      const requirePool = params.get('requirePool') === 'true';
       const onlyBelowMedian = params.get('onlyBelowMedian') === 'true';
       const onlyFavorites = params.get('onlyFavorites') === 'true';
       const hideDismissed = params.get('hideDismissed') === 'true';
@@ -410,6 +434,8 @@ export class ListingsPage {
         types,
         requireLift,
         requireExterior,
+        requireTerrace,
+        requirePool,
         onlyBelowMedian,
         onlyFavorites,
         hideDismissed,
@@ -435,6 +461,8 @@ export class ListingsPage {
       if (filters.types.length > 0) params.set('types', filters.types.join(','));
       if (filters.requireLift) params.set('requireLift', 'true');
       if (filters.requireExterior) params.set('requireExterior', 'true');
+      if (filters.requireTerrace) params.set('requireTerrace', 'true');
+      if (filters.requirePool) params.set('requirePool', 'true');
       if (filters.onlyBelowMedian) params.set('onlyBelowMedian', 'true');
       if (filters.onlyFavorites) params.set('onlyFavorites', 'true');
       if (filters.hideDismissed) params.set('hideDismissed', 'true');
@@ -454,6 +482,29 @@ export class ListingsPage {
       zone: activeZone,
       operation: this.filters().operation,
     });
+    this.editingListingId.set(null);
+    this.imagePreviewUrl.set('');
+    this.addModalError.set(null);
+    this.showAddModal.set(true);
+  }
+
+  protected openEditImageModal(listing: Listing): void {
+    this.newListing.set({
+      ...DEFAULT_NEW_LISTING,
+      url: listing.url,
+      source: listing.source ?? 'idealista',
+      zone: listing.zone,
+      operation: listing.operation,
+      type: listing.type,
+      address: listing.address,
+      price: listing.price,
+      rooms: listing.rooms,
+      area: listing.area,
+      floor: listing.floor,
+      imageUrl: listing.imageUrl ?? '',
+    });
+    this.editingListingId.set(listing.id);
+    this.imagePreviewUrl.set(listing.imageUrl ?? '');
     this.addModalError.set(null);
     this.showAddModal.set(true);
   }
@@ -461,6 +512,8 @@ export class ListingsPage {
   protected closeAddModal(): void {
     this.showAddModal.set(false);
     this.addModalError.set(null);
+    this.editingListingId.set(null);
+    this.imagePreviewUrl.set('');
   }
 
   protected onUrlChange(url: string): void {
@@ -495,8 +548,8 @@ export class ListingsPage {
     this.addModalError.set(null);
 
     try {
-      let id = '';
-      if (form.url) {
+      let id = this.editingListingId() ?? '';
+      if (!id && form.url) {
         const idMatch = /\/(\d{6,12})/.exec(form.url);
         if (idMatch) id = idMatch[1];
       }
@@ -504,20 +557,7 @@ export class ListingsPage {
         id = `manual_${Date.now()}`;
       }
 
-      const listing: Listing = {
-        id,
-        zone: form.zone,
-        operation: form.operation,
-        type: form.type || 'Piso',
-        address: form.address.trim(),
-        price: Number(form.price),
-        rooms: Number(form.rooms),
-        area: Number(form.area),
-        floor: form.floor.trim(),
-        url: form.url.trim() || `https://www.idealista.com/inmueble/${id}/`,
-        source: form.source,
-        ...(form.imageUrl.trim() ? { imageUrl: form.imageUrl.trim() } : {}),
-      };
+      const listing = buildListingFromForm(form, id);
 
       await this.service.addListing(listing);
       this.closeAddModal();
@@ -543,5 +583,10 @@ export class ListingsPage {
         parent.classList.add('grayscale');
       }
     }
+  }
+
+  protected setImageUrlFromInput(value: string): void {
+    this.newListing.update((form) => ({ ...form, imageUrl: value }));
+    this.imagePreviewUrl.set(value.trim());
   }
 }

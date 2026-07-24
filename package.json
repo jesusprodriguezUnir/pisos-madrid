@@ -15,7 +15,9 @@
     "scrape": "tsx scripts/scrape/index.ts",
     "seed:firebase": "tsx scripts/scrape/seed-firebase.ts",
     "clean:nuda": "tsx scripts/scrape/clean-nuda-propiedad.ts",
-    "add:url": "tsx scripts/scrape/add-url.ts"
+    "add:url": "tsx scripts/scrape/add-url.ts",
+    "add:listing-images": "tsx scripts/scrape/add-listing-images.ts",
+    "remove:listing-images": "tsx scripts/scrape/remove-listing-images.ts"
   },
   "private": true,
   "packageManager": "npm@10.9.8",

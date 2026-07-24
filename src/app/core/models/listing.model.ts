@@ -29,6 +29,15 @@ export interface Listing {
   readonly imageUrl?: string;
 }
 
+export interface ListingImage {
+  readonly id: string;
+  readonly listingId: string;
+  readonly imageUrl: string;
+  readonly isPrimary?: boolean;
+  readonly caption?: string;
+  readonly createdAt?: string;
+}
+
 /** Listing + métricas derivadas. Se calcula en cliente, nunca se persiste. */
 export interface EnrichedListing extends Listing {
   readonly pricePerM2: number;
@@ -38,6 +47,8 @@ export interface EnrichedListing extends Listing {
   readonly deltaVsZone: number;
   readonly hasLift: boolean;
   readonly isExterior: boolean;
+  readonly hasTerrace: boolean;
+  readonly hasPool: boolean;
 }
 
 /** Entrada de `public/data/districts/index.json`: qué ficheros de distrito existen. */
@@ -68,6 +79,8 @@ export interface ListingFilters {
   readonly types: readonly string[];
   readonly requireLift: boolean;
   readonly requireExterior: boolean;
+  readonly requireTerrace: boolean;
+  readonly requirePool: boolean;
   readonly onlyBelowMedian: boolean;
   readonly onlyFavorites: boolean;
   readonly hideDismissed: boolean;

@@ -46,7 +46,8 @@ export function parseListingsPage(html: string, zone: string, operation: Operati
     const rooms = toInt(details.find((d) => /hab/.test(d)));
     const area = toInt(details.find((d) => /m²/.test(d)));
     const price = toInt(article.querySelector('.item-price')?.text);
-    const floor = details.find((d) => /planta|bajo|entreplanta|ático|semi/i.test(d)) ?? '';
+    const infoDetails = details.filter((d) => !/hab/i.test(d) && !/m²/i.test(d));
+    const floor = infoDetails.length > 0 ? infoDetails.join(' ') : '';
 
     if (rooms < CRITERIA.minRooms || area < CRITERIA.minArea) continue;
     if (price <= 0 || price > OPERATIONS[operation].maxPrice) continue;

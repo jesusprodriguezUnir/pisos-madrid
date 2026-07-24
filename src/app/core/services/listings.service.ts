@@ -2,14 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, forkJoin, from, map, of, switchMap } from 'rxjs';
-import type { DistrictIndexEntry, EnrichedListing, Listing, ListingsDataset } from '../models/listing.model';
+import type { DistrictIndexEntry, EnrichedListing, Listing, ListingImage, ListingsDataset } from '../models/listing.model';
 import { enrich } from '../utils/listing-stats';
+import { mergeListingImages } from '../utils/listing-images';
 import { environment } from '../../../environments/environment';
 
 const INDEX_URL = 'data/districts/index.json';
 const districtUrl = (slug: string) => `data/districts/${slug}.json`;
 
-async function fetchListingsFromFirebase(): Promise<Listing[] | null> {
+async function fetchListingsFromFirebase(): Promise<{ listings: Listing[]; images: ListingImage[] } | null> {
   if (!environment.firebase?.apiKey || environment.firebase.apiKey === 'YOUR_API_KEY') {
     return null; // Firebase no configurado aún, usar fallback JSON local
   }
@@ -20,10 +21,15 @@ async function fetchListingsFromFirebase(): Promise<Listing[] | null> {
   const app = getApps().length === 0 ? initializeApp(environment.firebase) : getApps()[0];
   const db = getFirestore(app);
 
-  const snapshot = await getDocs(collection(db, 'listings'));
-  if (snapshot.empty) return null;
+  const listingsSnapshot = await getDocs(collection(db, 'listings'));
+  if (listingsSnapshot.empty) return null;
 
-  return snapshot.docs.map((doc) => doc.data() as Listing);
+  const imagesSnapshot = await getDocs(collection(db, 'listing_images'));
+
+  return {
+    listings: listingsSnapshot.docs.map((doc) => doc.data() as Listing),
+    images: imagesSnapshot.docs.map((doc) => doc.data() as ListingImage),
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -33,9 +39,10 @@ export class ListingsService {
 
   private readonly rawListingsSignal = toSignal(
     from(fetchListingsFromFirebase()).pipe(
-      switchMap((firebaseListings) => {
-        if (firebaseListings && firebaseListings.length > 0) {
-          return of(firebaseListings);
+      switchMap((firebaseData) => {
+        if (firebaseData && firebaseData.listings.length > 0) {
+          const merged = mergeListingImages(firebaseData.listings, firebaseData.images);
+          return of(merged);
         }
         // Fallback a archivos JSON locales de respaldo
         return this.http.get<DistrictIndexEntry[]>(INDEX_URL).pipe(

@@ -97,4 +97,14 @@ describe('parseFotocasaCards', () => {
     const [listing] = parseFotocasaCards([cardWithImg], 'Argüelles', 'venta');
     expect(listing.imageUrl).toBe('https://fotocasa.es/img.jpg');
   });
+
+  it('extrae características adicionales de terraza y piscina presentes en el texto', () => {
+    const featureCard = card({
+      href: '/es/comprar/vivienda/madrid-capital/arguelles/157057500/d',
+      text: 'Piso 450.000€ 3 hab. 85 m² Planta 1ª exterior con terraza con piscina',
+    });
+    const [listing] = parseFotocasaCards([featureCard], 'Argüelles', 'venta');
+    expect(listing.floor).toContain('con terraza');
+    expect(listing.floor).toContain('con piscina');
+  });
 });

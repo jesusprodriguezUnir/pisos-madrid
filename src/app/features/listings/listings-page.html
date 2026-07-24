@@ -203,6 +203,24 @@
       <button
         type="button"
         class="chip"
+        [class.on]="filters().requireTerrace"
+        [attr.aria-pressed]="filters().requireTerrace"
+        (click)="toggleFlag('requireTerrace')"
+      >
+        🪴 Terraza
+      </button>
+      <button
+        type="button"
+        class="chip"
+        [class.on]="filters().requirePool"
+        [attr.aria-pressed]="filters().requirePool"
+        (click)="toggleFlag('requirePool')"
+      >
+        🏊 Piscina
+      </button>
+      <button
+        type="button"
+        class="chip"
         [class.on]="filters().onlyBelowMedian"
         [attr.aria-pressed]="filters().onlyBelowMedian"
         (click)="toggleFlag('onlyBelowMedian')"
@@ -387,6 +405,14 @@
                   <button
                     type="button"
                     class="icon-btn small"
+                    title="Portada"
+                    (click)="openEditImageModal(row)"
+                  >
+                    🖼️
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn small"
                     [class.on]="favoritesService.isFavorite(row.id)"
                     (click)="favoritesService.toggleFavorite(row.id)"
                     title="Favorito"
@@ -443,6 +469,12 @@
                 }
                 @if (row.isExterior) {
                   <span class="tag">☀ Exterior</span>
+                }
+                @if (row.hasTerrace) {
+                  <span class="tag">🪴 Terraza</span>
+                }
+                @if (row.hasPool) {
+                  <span class="tag">🏊 Piscina</span>
                 }
               </div>
             </div>
@@ -662,10 +694,10 @@
 
 <!-- MODAL AÑADIR INMUEBLE -->
 @if (showAddModal()) {
-  <div class="modal-backdrop" (click)="closeAddModal()">
-    <div class="modal-card" (click)="$event.stopPropagation()">
+  <div class="modal-backdrop" role="presentation" (click)="closeAddModal()">
+    <div class="modal-card" role="dialog" tabindex="-1" aria-modal="true" (click)="$event.stopPropagation()" (keydown.enter)="$event.stopPropagation()" (keydown.space)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>Añadir inmueble a la base de datos</h2>
+        <h2>{{ editingListingId() ? 'Actualizar portada del inmueble' : 'Añadir inmueble a la base de datos' }}</h2>
         <button type="button" class="btn-close" (click)="closeAddModal()">✕</button>
       </div>
 
@@ -802,6 +834,27 @@
             (ngModelChange)="updateNewListing('floor', $event)"
           />
         </div>
+
+        <div class="form-group">
+          <label for="newImageUrl">URL de la portada</label>
+          <input
+            id="newImageUrl"
+            type="url"
+            placeholder="https://.../imagen.jpg"
+            [ngModel]="newListing().imageUrl"
+            (ngModelChange)="setImageUrlFromInput($event)"
+          />
+          <span class="form-help"
+            >Añade una imagen para que el inmueble tenga portada en la tarjeta.</span
+          >
+        </div>
+
+        @if (imagePreviewUrl()) {
+          <div class="form-group">
+            <span>Previsualización</span>
+            <img [src]="imagePreviewUrl()" [alt]="newListing().address" class="card-img" />
+          </div>
+        }
       </div>
 
       <div class="modal-footer">
@@ -814,7 +867,7 @@
           (click)="submitNewListing()"
           [disabled]="isSaving()"
         >
-          {{ isSaving() ? 'Guardando…' : 'Guardar inmueble' }}
+          {{ isSaving() ? 'Guardando…' : editingListingId() ? 'Guardar portada' : 'Guardar inmueble' }}
         </button>
       </div>
     </div>

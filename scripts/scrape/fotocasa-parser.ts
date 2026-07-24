@@ -57,7 +57,13 @@ export function parseFotocasaCards(
     const area = toInt(AREA_RE.exec(card.text)?.[1]);
     const priceMatch = PRICE_RE.exec(card.text);
     const price = toInt(priceMatch?.[1] ?? priceMatch?.[2]);
-    const floor = FLOOR_RE.exec(card.text)?.[0]?.trim() ?? '';
+    const baseFloor = FLOOR_RE.exec(card.text)?.[0]?.trim() ?? '';
+    const extras: string[] = [];
+    if (!/ascensor/i.test(baseFloor) && /ascensor/i.test(card.text)) extras.push('con ascensor');
+    if (!/terraza|balc[oó]n/i.test(baseFloor) && /terraza|balc[oó]n/i.test(card.text)) extras.push('con terraza');
+    if (!/piscina/i.test(baseFloor) && /piscina/i.test(card.text)) extras.push('con piscina');
+    if (!/exterior|interior/i.test(baseFloor) && /\bexterior\b/i.test(card.text)) extras.push('exterior');
+    const floor = [baseFloor, ...extras].filter(Boolean).join(' ');
 
     if (rooms < CRITERIA.minRooms || area < CRITERIA.minArea) continue;
     if (price <= 0 || price > OPERATIONS[operation].maxPrice) continue;
