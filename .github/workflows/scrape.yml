@@ -31,6 +31,7 @@ jobs:
       # commitea el resultado a mano.
       - name: Scrape
         run: npm run scrape
+        continue-on-error: true
 
       - name: Commit si hay cambios
         run: |
