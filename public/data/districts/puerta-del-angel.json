@@ -1,35 +1,63 @@
 {
  "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-07-24T04:59:47.176Z",
- "total": 2,
+ "scrapedAt": "2026-09-16T06:42:27.515Z",
+ "total": 4,
  "listings": [
   {
-   "id": "190264317",
+   "id": "190204582",
    "zone": "Puerta del Ángel",
    "operation": "venta",
    "type": "Piso",
    "address": "Puerta del Ángel",
-   "price": 220000,
-   "rooms": 2,
-   "area": 60,
-   "floor": "Planta·TerrazaHace 6 díasTop+Más detalles***SIN COMISIONES DE AGENCIA INMOBILIARIA***",
-   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/terraza-no-amueblado/190264317/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
+   "price": 248000,
+   "rooms": 3,
+   "area": 66,
+   "floor": "Bajos·CalefacciónHace 67 díasTop+Más detallesInmobiliaria Dream Home Madrid ofrece en venta Bajo exterior Sin ascensor Puerta del Ángel – Madrid",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/calefaccion-amueblado/190204582/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
    "source": "fotocasa",
-   "imageUrl": "https://static.fotocasa.es/images/ads/b06b4939-c1db-41f8-b092-4172367c696c?rule=original"
+   "imageUrl": "https://static.fotocasa.es/images/ads/3df476cf-bfda-4415-ae5e-273f9c23cbfd?rule=original"
   },
   {
-   "id": "189155539",
+   "id": "190592335",
    "zone": "Puerta del Ángel",
    "operation": "venta",
-   "type": "Piso con terraza",
-   "address": "Piso con terraza en De Los Apóstoles, Puerta del Ángel",
-   "price": 320000,
+   "type": "Piso",
+   "address": "Puerta del Ángel",
+   "price": 300000,
+   "rooms": 2,
+   "area": 71,
+   "floor": "Planta·Aire acondicionadoHace 18 díasTop+Más detallesREFORMADO INTEGRAMENTE",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/aire-acondicionado-no-amueblado/190592335/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/ads/e2aa6fa7-af3d-43ff-bfee-5af51e4fbd1a?rule=original"
+  },
+  {
+   "id": "189752033",
+   "zone": "Puerta del Ángel",
+   "operation": "venta",
+   "type": "Piso con ascensor",
+   "address": "Piso con ascensor en Calle de Severino Aznar Embid, Puerta del Ángel",
+   "price": 279000,
+   "rooms": 2,
+   "area": 72,
+   "floor": "plantas o cenar al aire libre con ascensor exterior",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid/aire-acondicionado-ascensor-amueblado/189752033/d",
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/client/96a9eb91-61ad-4192-80b8-05a3b101a19a/20240610104953?rule=web_77x40"
+  },
+  {
+   "id": "189982262",
+   "zone": "Puerta del Ángel",
+   "operation": "venta",
+   "type": "Piso con calefacción",
+   "address": "Piso con calefacción en de los Sagrados Corazónes, Puerta del Ángel",
+   "price": 330000,
    "rooms": 3,
    "area": 75,
-   "floor": "planta",
-   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/aire-acondicionado-calefaccion-terraza-ascensor-amueblado/189155539/d",
+   "floor": "planta sin ascensor exterior",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid/calefaccion-trastero-no-amueblado/189982262/d",
    "source": "fotocasa",
-   "imageUrl": "https://static.fotocasa.es/images/client/9202762554211/670333.jpg?rule=web_77x40"
+   "imageUrl": "https://static.fotocasa.es/images/client/9202758749850/445720-20171026161320.jpg?rule=web_77x40"
   }
  ]
 }
