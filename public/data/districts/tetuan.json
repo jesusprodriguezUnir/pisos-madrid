@@ -1,7 +1,7 @@
 {
  "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-09-16T06:42:51.389Z",
- "total": 3,
+ "scrapedAt": "2026-09-17T06:43:00.470Z",
+ "total": 4,
  "listings": [
   {
    "id": "186436210",
@@ -18,32 +18,46 @@
    "imageUrl": "https://static.fotocasa.es/images/ads/3b468147-0e50-4a77-8b20-82b136de643b?rule=original"
   },
   {
+   "id": "189884465",
+   "zone": "Tetuán",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Tetuán",
+   "price": 334900,
+   "rooms": 3,
+   "area": 70,
+   "floor": "Planta·Aire acondicionadoMás de 3 mesesTopMás detallesDescubre este moderno y luminoso piso 100% EXTERIOR en la zona de Valdeacederas",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/aire-acondicionado-no-amueblado/189884465/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/ads/3006aba7-c0fd-444c-be17-ba9b0a143d5c?rule=original"
+  },
+  {
    "id": "190490717",
    "zone": "Tetuán",
    "operation": "venta",
    "type": "Piso",
    "address": "Tetuán",
-   "price": 374900,
+   "price": 334900,
    "rooms": 3,
-   "area": 72,
-   "floor": "Planta·Terraza·Calefacción·Aire acondicionadoHace 29 díasTopMás detallesVOhome Propiedades presenta en exclusiva esta magnífica vivienda con ascensor exterior",
+   "area": 70,
+   "floor": "Planta·Aire acondicionadoMás de 3 mesesTopMás detallesDescubre este moderno y luminoso piso 100% EXTERIOR en la zona de Valdeacederas con terraza",
    "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid/aire-acondicionado-calefaccion-terraza-no-amueblado/190490717/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
    "source": "fotocasa",
-   "imageUrl": "https://static.fotocasa.es/images/ads/6561aa5b-6a9f-4300-bba9-490a39511d19?rule=original"
+   "imageUrl": "https://static.fotocasa.es/images/ads/3006aba7-c0fd-444c-be17-ba9b0a143d5c?rule=original"
   },
   {
-   "id": "190129719",
+   "id": "190703878",
    "zone": "Tetuán",
-   "operation": "alquiler",
+   "operation": "venta",
    "type": "Piso",
    "address": "Tetuán",
-   "price": 1500,
+   "price": 344000,
    "rooms": 2,
-   "area": 74,
-   "floor": "planta con ascensor con terraza",
-   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/aire-acondicionado-calefaccion-terraza-ascensor-no-amueblado/190129719/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
+   "area": 64,
+   "floor": "Ático con terraza en Berruguete Berruguete con ascensor",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/aire-acondicionado-calefaccion-terraza-ascensor/190703878/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
    "source": "fotocasa",
-   "imageUrl": "https://static.fotocasa.es/images/ads/d6189276-c80d-441d-a2d7-1076ba19c7fb?rule=original"
+   "imageUrl": "https://static.fotocasa.es/images/ads/827060d3-01a0-4b06-8478-8946c8ba0d4d?rule=original"
   }
  ]
 }

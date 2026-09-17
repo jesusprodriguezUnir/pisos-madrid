@@ -1,7 +1,7 @@
 {
  "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-09-16T06:43:18.393Z",
- "total": 1,
+ "scrapedAt": "2026-09-17T06:43:27.834Z",
+ "total": 2,
  "listings": [
   {
    "id": "188240454",
@@ -16,6 +16,20 @@
    "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid/aire-acondicionado-calefaccion-piscina/188240454/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
    "source": "fotocasa",
    "imageUrl": "https://static.fotocasa.es/images/ads/493532a3-baf1-48c1-bd78-00580c5e4628?rule=original"
+  },
+  {
+   "id": "190838075",
+   "zone": "Arganzuela",
+   "operation": "alquiler",
+   "type": "Piso con ascensor",
+   "address": "Piso con ascensor en C. de Carmen Cobeña, Acacias",
+   "price": 1550,
+   "rooms": 2,
+   "area": 85,
+   "floor": "planta con ascensor",
+   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/aire-acondicionado-parking-ascensor/190838075/d",
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/client/ecea1eb4-1949-4021-9589-f085f0690db9/20250114150300?rule=web_77x40"
   }
  ]
 }
