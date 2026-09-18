@@ -1,7 +1,7 @@
 {
  "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-09-17T06:43:00.470Z",
- "total": 4,
+ "scrapedAt": "2026-09-18T06:41:21.954Z",
+ "total": 5,
  "listings": [
   {
    "id": "186436210",
@@ -46,18 +46,32 @@
    "imageUrl": "https://static.fotocasa.es/images/ads/3006aba7-c0fd-444c-be17-ba9b0a143d5c?rule=original"
   },
   {
-   "id": "190703878",
+   "id": "189475291",
    "zone": "Tetuán",
    "operation": "venta",
    "type": "Piso",
    "address": "Tetuán",
-   "price": 344000,
+   "price": 290000,
    "rooms": 2,
-   "area": 64,
-   "floor": "Ático con terraza en Berruguete Berruguete con ascensor",
-   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/aire-acondicionado-calefaccion-terraza-ascensor/190703878/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
+   "area": 60,
+   "floor": "Planta baja con calefacción en Calle ALEJANDRO RODRIGUEZ",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid/aire-acondicionado-calefaccion-amueblado/189475291/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
    "source": "fotocasa",
-   "imageUrl": "https://static.fotocasa.es/images/ads/827060d3-01a0-4b06-8478-8946c8ba0d4d?rule=original"
+   "imageUrl": "https://static.fotocasa.es/images/ads/419196ea-8a32-46ad-8541-a66d6c0dd4a1?rule=original"
+  },
+  {
+   "id": "190830659",
+   "zone": "Tetuán",
+   "operation": "venta",
+   "type": "Piso",
+   "address": "Tetuán",
+   "price": 335000,
+   "rooms": 3,
+   "area": 66,
+   "floor": "con terraza exterior",
+   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid-capital/calefaccion-amueblado/190830659/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
+   "source": "fotocasa",
+   "imageUrl": "https://static.fotocasa.es/images/ads/82498d83-e612-48e0-8eba-72fee3ea48e3?rule=original"
   }
  ]
 }

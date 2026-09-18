@@ -1,35 +1,35 @@
 {
  "source": "idealista.com + fotocasa.es",
- "scrapedAt": "2026-09-16T06:42:37.642Z",
+ "scrapedAt": "2026-09-18T06:41:11.740Z",
  "total": 2,
  "listings": [
   {
-   "id": "189927052",
+   "id": "190864010",
    "zone": "Embajadores",
-   "operation": "venta",
+   "operation": "alquiler",
    "type": "Piso",
    "address": "Embajadores",
-   "price": 495000,
-   "rooms": 2,
-   "area": 72,
-   "floor": "Planta·Ascensor·Balcón·CalefacciónMás de 3 mesesTop+Más detallesEngel & Völkers presenta en exclusiva esta vivienda de 72 m² construidos",
-   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid/calefaccion-ascensor-no-amueblado/189927052/d",
+   "price": 1750,
+   "rooms": 3,
+   "area": 100,
+   "floor": "",
+   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/amueblado-internet/190864010/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
    "source": "fotocasa",
-   "imageUrl": "https://static.fotocasa.es/images/ads/8a8f5ac1-e48c-4ef0-8e62-f121fbaa1177?rule=original"
+   "imageUrl": "https://static.fotocasa.es/images/ads/aa3e57c9-25ef-4326-9d13-ed43e840f8aa?rule=original"
   },
   {
-   "id": "189855071",
+   "id": "189719032",
    "zone": "Embajadores",
-   "operation": "venta",
-   "type": "Piso",
-   "address": "Embajadores",
-   "price": 495000,
+   "operation": "alquiler",
+   "type": "Piso con balcón",
+   "address": "Piso con balcón en Mesón de Paredes, Embajadores - Lavapiés",
+   "price": 1550,
    "rooms": 2,
-   "area": 72,
-   "floor": "Planta·Ascensor·Balcón·CalefacciónMás de 3 mesesTop+Más detallesEngel & Völkers presenta en exclusiva esta vivienda de 72 m² construidos exterior",
-   "url": "https://www.fotocasa.es/es/comprar/vivienda/madrid/aire-acondicionado-calefaccion-no-amueblado/189855071/d?from=list&multimedia=image&isGalleryOpen=true&isZoomGalleryOpen=true",
+   "area": 70,
+   "floor": "Planta·Ascensor·Parking·Balcón·CalefacciónMás de 3 meses",
+   "url": "https://www.fotocasa.es/es/alquiler/vivienda/madrid-capital/aire-acondicionado-calefaccion-parking-ascensor-amueblado/189719032/d",
    "source": "fotocasa",
-   "imageUrl": "https://static.fotocasa.es/images/ads/8a8f5ac1-e48c-4ef0-8e62-f121fbaa1177?rule=original"
+   "imageUrl": "https://static.fotocasa.es/images/client/01336661-942a-46d2-997a-1f511a6696d0/20250519082212?rule=web_125x65"
   }
  ]
 }
